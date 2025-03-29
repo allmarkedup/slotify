@@ -1,0 +1,10 @@
+<%# locals: (title:) -%>
+<%# slots: (items: nil) -%>
+ 
+<h3><%= title %></h3>
+
+<% if items.any? %>
+  <%= tag.ul class: "list" do %>
+    <%= partial.li items, class: "list-item" %>
+  <% end %>
+<% end %>

@@ -1,2 +1,3 @@
 # slotify
-Slotify your Rails partials
+
+Superpowered slots for your Rails partials.

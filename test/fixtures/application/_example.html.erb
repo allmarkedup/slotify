@@ -1,0 +1,60 @@
+<%# locals: (id:) -%>
+<%# slots: (title: "Example title", subtitle: nil, website_link:, lists: nil, quotes: nil) -%>
+
+<%= tag.section id: do %>
+  <h1 class="example-title">
+    <%= title %>
+  </h1>
+
+  <%#
+    Render slot content and options via the tag helper.
+    Additional options are merged with any options provided by the caller.
+  %>
+  <%= partial.h2 subtitle, class: "example-subtitle" if subtitle? %>
+  
+  <%#
+    Link slot rendered via the link_to helper.
+    This example uses the more verbose `partial.slots.SLOT_NAME`
+    accessor rather than the shorthand 'local variable' style.
+  %>
+  <p>Example link: <%= partial.link_to website_link, data: {controller: "external-link"} %></p>
+
+  <hr>
+
+  <%#
+    Renders the `_list.html.erb` partial once for each of the `list` slot entries.
+    The slot block content is passed through so that the list item slots can be
+    set by the top-level caller.
+  %>
+  <%= render lists, title: "Default title" %>
+
+  <%#
+    The target partial path can be overriden if required:
+  %>
+  <%= render lists, partial: "ordered_list", locals: {title: "Default title"} %>
+
+  <hr>
+
+  <% if quotes.any? %>
+    <h3>Quotes</h3>
+    <%#
+      Slots intended to be called multiple times are declared with
+      and referenced with plural variable names.
+      Arbitrary slot keyword args can be provided by the caller
+      and accessed via the `SLOT_NAME.options` hash in the partial.
+    %>
+    <% quotes.each do |quote| %>
+      <blockquote <%= quote.options.except(:citation) %>>
+        <%= quote %>
+        <%== "&mdash; #{tag.cite(quote.options.citation)}" if quote.options.citation.present? %>
+      </blockquote>
+    <% end %>
+  <% end %>
+
+  <%#
+    Yield any other non-slot content from the calling block.
+  %>
+  <div class="example-description">
+    <%= partial.yield %>
+  </div>
+<% end %>
