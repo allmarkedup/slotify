@@ -1,0 +1,17 @@
+<%# slots: (items: nil, things: ["Default thing 1"]) -%>
+
+<% if items.any? %>
+  <ul class="items">
+    <% items.each do |item| %>
+      <li class="item"><%= item %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% if things.any? %>
+  <ul class="things">
+    <% things.each do |thing| %>
+      <li class="thing"><%= thing %></li>
+    <% end %>
+  </ul>
+<% end %>

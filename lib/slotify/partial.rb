@@ -14,7 +14,7 @@ module Slotify
     end
 
     def content_for(slot_name)
-      raise SlotError, "slots content cannot be accessed before the slots are defined" if @slot_names.nil?
+      raise SlotsAccessError, "slots content cannot be accessed before the slots are defined" if @slot_names.nil?
       raise UnknownSlotError, "unknown slot `#{slot_name}`" unless @slot_names.include?(slot_name.to_sym)
 
       matches = @entries.filter { _1.slot_name == slot_name.to_s.singularize.to_sym }
@@ -59,8 +59,8 @@ module Slotify
       undefined_slot_names = entries_slot_names - @slot_names.map { _1.to_s.singularize.to_sym }
 
       if undefined_slot_names.any?
-        display_slot_names = undefined_slot_names.map { "#{_1}/#{_1.to_s.pluralize}" }
-        raise SlotError, "missing slot #{"definition".pluralize(display_slot_names.size)} for `#{display_slot_names.join(", ")}`"
+        display_slot_names = undefined_slot_names.map { "#{_1}(s)" }
+        raise UndefinedSlotError, "missing slot #{"definition".pluralize(display_slot_names.size)} for `#{display_slot_names.join(", ")}`"
       end
 
       slot_definitions.each do |definition|
@@ -70,16 +70,21 @@ module Slotify
         entries = @entries.filter { _1.slot_name == name.singularize.to_sym }
 
         if required && entries.none?
-          raise SlotError, "missing required content for slot `#{name}`"
+          raise MissingRequiredSlotError, "missing required content for slot `#{name}`"
         end
 
         if single_entry_slot && entries.many?
-          raise SlotError, "singular `#{name}` slot called #{entries.size} times (expected 1)"
+          raise MultipleSlotEntriesError, "singular `#{name}` slot called #{entries.size} times (expected 1)"
         end
 
         if !required && entries.none? && definition.last != "nil"
-          default_value = @view_context.compiled_method_container.instance_eval(definition.last)
-          add_entry(name, [default_value])
+          if single_entry_slot
+            default_value = template_eval(definition.last)
+            add_entry(name, [default_value])
+          else
+            default_values = Array(template_eval(definition.last))
+            default_values.each { add_entry(name.singularize, [_1]) }
+          end
         end
       end
 
@@ -129,6 +134,10 @@ module Slotify
       end
     end
 
+    def template_eval(source)
+      @view_context.compiled_method_container.instance_eval(source)
+    end
+
     class << self
       def parse_slots_definition(source)
         source.sub!(SLOTS_REGEX, "")
@@ -136,8 +145,7 @@ module Slotify
         definitions
           .split(",")
           .map(&:strip)
-          .filter { !["&_", "**", "**nil"].include?(_1) }
-          .map { _1.split(":", 2).map(&:strip) }
+          .map { |keyval| keyval.split(":", 2).map(&:strip).filter { |val| val.present? } }
           .uniq(&:first)
       end
     end
