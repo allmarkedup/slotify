@@ -1,4 +1,5 @@
 require "zeitwerk"
+require "action_view"
 require_relative "slotify/version"
 require_relative "slotify/error"
 
@@ -12,7 +13,7 @@ module Slotify
 end
 
 ActiveSupport.on_load :action_view do
-  prepend Slotify::ActionView::Base
-  ActionView::Template.prepend Slotify::ActionView::Template
-  ActionView::PartialRenderer.prepend Slotify::ActionView::PartialRenderer
+  prepend Slotify::Extensions::Base
+  ActionView::Template.prepend Slotify::Extensions::Template
+  ActionView::PartialRenderer.prepend Slotify::Extensions::PartialRenderer
 end

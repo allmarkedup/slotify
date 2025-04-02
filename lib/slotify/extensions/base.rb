@@ -1,5 +1,5 @@
 module Slotify
-  module ActionView
+  module Extensions
     module Base
       attr_reader :partial
 

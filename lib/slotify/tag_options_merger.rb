@@ -1,4 +1,3 @@
-
 module Slotify
   module TagOptionsMerger
     class << self
@@ -44,7 +43,7 @@ module Slotify
       end
 
       def merge_strings(*args)
-        args.map(&:presence).compact.join(' ')
+        args.map(&:presence).compact.join(" ")
       end
 
       def all_kind_of?(kind, values)

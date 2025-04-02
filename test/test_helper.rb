@@ -29,7 +29,7 @@ class Slotify::TestCase < ActionView::TestCase
 
   TestController.prepend_view_path "test/fixtures"
 
-   private
+  private
 
   def page
     @page ||= Capybara.string(rendered)

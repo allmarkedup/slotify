@@ -50,21 +50,19 @@ class SingleSlotsTest < Slotify::TestCase
 
     describe "with no slot content set" do
       it "raises an exception" do
-        error = _{ render partial_path }.must_raise ActionView::Template::Error
-        _(error.cause).must_be_kind_of Slotify::MissingRequiredSlotError
+        _ { render partial_path }.must_raise Slotify::StrictSlotsError
       end
     end
   end
 
   describe "multiple calls to singular slot" do
     it "raises an exception" do
-      error = _ do
+      _ do
         render "singular_optional" do |partial|
           partial.with_title "Title 1"
           partial.with_title "Title 2"
         end
-      end.must_raise ActionView::Template::Error
-      _(error.cause).must_be_kind_of Slotify::MultipleSlotEntriesError
+      end.must_raise Slotify::MultipleSlotEntriesError
     end
   end
 end

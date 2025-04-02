@@ -2,23 +2,37 @@ module Slotify
   class Partial
     include Utils
 
-    SLOTS_REGEX = /\#\s+slots:\s+\((.*)\)/
-
     attr_reader :outer_partial
 
     def initialize(view_context)
       @view_context = view_context
       @outer_partial = view_context.partial
       @entries = []
-      @slot_names = nil
+      @strict_slots = false
     end
 
-    def content_for(slot_name)
-      raise SlotsAccessError, "slots content cannot be accessed before the slots are defined" if @slot_names.nil?
-      raise UnknownSlotError, "unknown slot `#{slot_name}`" unless @slot_names.include?(slot_name.to_sym)
+    def content_for(slot_name, fallback_value = nil)
+      raise SlotsAccessError, "slot content cannot be accessed from outside the partial" unless slots_defined?
+      raise UnknownSlotError, "unknown slot :#{slot_name}" unless slot_defined?(slot_name)
 
-      matches = @entries.filter { _1.slot_name == slot_name.to_s.singularize.to_sym }
-      singular?(slot_name) ? matches.first : EntryCollection.new(matches)
+      entries = slot_entries(slot_name)
+
+      if entries.none? && !fallback_value.nil?
+        if plural?(slot_name) && fallback_value.is_a?(Array)
+          fallback_value.each { entries << add_entry(slot_name, [_1]) }
+        else
+          entries << add_entry(slot_name, [fallback_value])
+        end
+      end
+
+      singular?(slot_name) ? entries.first : EntryCollection.new(entries)
+    end
+
+    def content_for?(slot_name)
+      raise SlotsAccessError, "slot content cannot be accessed from outside the partial" unless slots_defined?
+      raise UnknownSlotError, "unknown slot :#{slot_name}" unless slot_defined?(slot_name)
+
+      slot_entries(slot_name).any?
     end
 
     def capture(*args, &block)
@@ -29,13 +43,22 @@ module Slotify
       if args.empty?
         @captured_buffer
       else
-        content_for(args.first).to_s
+        content_for(args.first)
       end
+    end
+
+    def slot_locals
+      @strict_slots.map { [_1, content_for(_1).presence] }.to_h.compact
+    end
+
+    def with_strict_slots(strict_slot_names)
+      @strict_slots = strict_slot_names.map(&:to_sym)
+      validate_slots!
     end
 
     def render(target, locals = {}, &block)
       if target.is_a?(EntryCollection)
-        target.reduce(ActiveSupport::SafeBuffer.new) { _1 << render(_2, locals) }
+        target.reduce(ActiveSupport::SafeBuffer.new) { |buffer, entry| buffer << render(entry, locals) }
       elsif target.is_a?(Entry)
         if locals.key?(:partial) || locals.key?(:locals)
           partial_path = locals[:partial] || target.to_partial_path
@@ -53,44 +76,6 @@ module Slotify
       @helpers || Helpers.new(@view_context)
     end
 
-    def define_slots(slot_definitions)
-      @slot_names = slot_definitions.map { _1.first.to_sym }
-      entries_slot_names = @entries.map(&:slot_name).uniq
-      undefined_slot_names = entries_slot_names - @slot_names.map { _1.to_s.singularize.to_sym }
-
-      if undefined_slot_names.any?
-        display_slot_names = undefined_slot_names.map { "#{_1}(s)" }
-        raise UndefinedSlotError, "missing slot #{"definition".pluralize(display_slot_names.size)} for `#{display_slot_names.join(", ")}`"
-      end
-
-      slot_definitions.each do |definition|
-        name = definition.first.to_s
-        required = definition.size == 1
-        single_entry_slot = singular?(name)
-        entries = @entries.filter { _1.slot_name == name.singularize.to_sym }
-
-        if required && entries.none?
-          raise MissingRequiredSlotError, "missing required content for slot `#{name}`"
-        end
-
-        if single_entry_slot && entries.many?
-          raise MultipleSlotEntriesError, "singular `#{name}` slot called #{entries.size} times (expected 1)"
-        end
-
-        if !required && entries.none? && definition.last != "nil"
-          if single_entry_slot
-            default_value = template_eval(definition.last)
-            add_entry(name, [default_value])
-          else
-            default_values = Array(template_eval(definition.last))
-            default_values.each { add_entry(name.singularize, [_1]) }
-          end
-        end
-      end
-
-      define_accessors(@slot_names)
-    end
-
     def respond_to_missing?(name, include_private = false)
       name.start_with?("with_") || helpers.respond_to?(name)
     end
@@ -103,7 +88,7 @@ module Slotify
         else
           collection = args.shift
           unless collection.respond_to?(:each)
-            raise SlotArgumentError, "first argument for plural slot setter `#{name}` must be an array"
+            raise SlotArgumentError, "first argument for plural slot setter :#{name} must be an array"
           end
           collection.each { add_entry(slot_name.singularize, [_1, *args], options, block) }
         end
@@ -114,39 +99,44 @@ module Slotify
 
     private
 
+    def slots_defined?
+      !@strict_slots.nil?
+    end
+
+    def slot_defined?(slot_name)
+      slot_name && slots_defined? && @strict_slots.include?(slot_name.to_sym)
+    end
+
+    def slot_entries(slot_name)
+      @entries.filter { _1.slot_name == slot_name.to_s.singularize.to_sym }
+    end
+
     def add_entry(slot_name, args = [], options = {}, block = nil)
-      if args.first.respond_to?(:to_entry)
+      slot_name = slot_name.to_s.singularize.to_sym
+      if args.first.is_a?(Entry)
         entry = args.shift
         entry = entry.to_entry
         args, options, block = entry.merged_args(args, options, block)
       end
 
       @entries << Entry.new(@view_context, slot_name, args, options, block)
+      @entries.last
     end
 
-    def define_accessors(slot_names)
-      slot_names.each do |name|
-        self.class.define_method(name) { content_for(name) }
-        self.class.define_method(:"#{name}?") { content_for(name).any? }
+    def validate_slots!
+      return if @strict_slots.nil?
 
-        @view_context.class.define_method(name) { partial.content_for(name) }
-        @view_context.class.define_method(:"#{name}?") { partial.content_for(name).present? }
+      singular_slots = @strict_slots.map { _1.to_s.singularize.to_sym }
+      slots_called = @entries.map(&:slot_name).uniq
+      undefined_slots = slots_called - singular_slots
+
+      if undefined_slots.any?
+        raise UndefinedSlotError, "missing slot #{"definition".pluralize(undefined_slots.size)} for `#{undefined_slots.map { ":#{_1}(s)" }.join(", ")}`"
       end
-    end
 
-    def template_eval(source)
-      @view_context.compiled_method_container.instance_eval(source)
-    end
-
-    class << self
-      def parse_slots_definition(source)
-        source.sub!(SLOTS_REGEX, "")
-        definitions = $1
-        definitions
-          .split(",")
-          .map(&:strip)
-          .map { |keyval| keyval.split(":", 2).map(&:strip).filter { |val| val.present? } }
-          .uniq(&:first)
+      @strict_slots.filter { singular?(_1) }.each do |slot_name|
+        entries = slot_entries(slot_name)
+        raise MultipleSlotEntriesError, "slot :#{slot_name} called #{entries.size} times (expected 1)" if entries.many?
       end
     end
   end

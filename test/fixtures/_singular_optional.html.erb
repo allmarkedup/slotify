@@ -1,9 +1,9 @@
 <%# slots: (title: nil, subtitle: "Default subtitle") -%>
 
-<% if title? %>
+<% if title.present? %>
   <h1><%= title %></h1>
 <% end %>
 
-<% if subtitle? %>
+<% if subtitle.present? %>
   <h2><%= subtitle %></h2>
 <% end %>

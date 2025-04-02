@@ -1,17 +1,15 @@
-<img src=".github/assets/slotify_wordmark.svg" width="140">
+<img src=".github/assets/slotify_wordmark.svg" width="180">
   
-
-
 #### _A superpowered slot system for Rails partials._
 
 ----------
 
 ## Overview
 
-Slotify adds a lightweight (but powerful!) slot system for providing content to partials when rendering them.
+Slotify adds a lightweight (but powerful!) slot system for providing content to partials at render time.
 
-Slots are defined using a `strict locals`-style magic comment at the top of the partial.
-Slot content is accessed via 'regular' local variables within the template.
+Slots are defined using a [strict locals](https://guides.rubyonrails.org/action_view_overview.html#strict-locals)-style magic comment at the top of the partial.
+Slot contents are then accessed via regular local variables within the template.
 
 ```erb
 <!-- views/_my_partial_.html.erb -->
@@ -32,7 +30,7 @@ Slot content is accessed via 'regular' local variables within the template.
   <% end %>
 
   <p>
-    Example link: <%= partial.link_to link, class: "example-link" %>
+    Example link: <%= link_to *link.args, **link.options %>
   </p>
 </div>
 ```
@@ -56,7 +54,7 @@ Slots defined with singular names can only be called with content once whereas s
 
 ### Requirements
 
-* `Rails 8.0+`
+* `Rails 7.1+`
 * `Ruby 3.1+`
 
 ## Usage
@@ -65,7 +63,7 @@ Slots defined with singular names can only be called with content once whereas s
 
 ### Defining slots
 
-Slots are defined using a `strict locals`-style magic comment at the top of the partial template.
+Slots are defined using a [strict locals](https://guides.rubyonrails.org/action_view_overview.html#strict-locals)-style magic comment at the top of the partial template.
 
 ```erb
 <%# slots: (title: "Example title", lists: nil, quotes: nil, website_link:) -%>

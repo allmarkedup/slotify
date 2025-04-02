@@ -16,4 +16,7 @@ module Slotify
 
   class SlotArgumentError < ArgumentError
   end
+
+  class StrictSlotsError < ArgumentError
+  end
 end

@@ -73,8 +73,7 @@ class PluralSlotsTest < Slotify::TestCase
 
     describe "with no slot content set" do
       it "raises an exception" do
-        error = _ { render partial_path }.must_raise ActionView::Template::Error
-        _(error.cause).must_be_kind_of Slotify::MissingRequiredSlotError
+        _ { render partial_path }.must_raise Slotify::StrictSlotsError
       end
     end
   end

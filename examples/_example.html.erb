@@ -10,7 +10,7 @@
     Render slot content and options via the tag helper.
     Additional options are merged with any options provided by the caller.
   %>
-  <%= partial.h2 subtitle, class: "example-subtitle" if subtitle? %>
+  <%= partial.h2 subtitle, class: "example-subtitle" if subtitle.present? %>
   
   <%#
     Link slot rendered via the link_to helper.
@@ -57,4 +57,4 @@
   <div class="example-description">
     <%= partial.yield %>
   </div>
-<% end %>
+<% end %> 
