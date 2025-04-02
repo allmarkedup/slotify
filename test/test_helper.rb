@@ -1,14 +1,20 @@
 ENV["RAILS_ENV"] = "test"
 
-require "rails"
 require "action_view"
+require "action_controller/railtie"
+require "slotify"
+
 require "rails/test_help"
+
+require "support/view_helpers"
 
 class TestApp < Rails::Application
   config.root = __dir__
   config.hosts << "example.com"
-  credentials.secret_key_base = "foobar"
+  credentials.secret_key_base = "slotify_secret_key"
 end
+
+
 
 require "capybara/rails"
 require "capybara/dsl"
@@ -18,9 +24,8 @@ require "capybara/minitest/spec"
 require "minitest/spec"
 require "minitest/reporters"
 
-require "slotify"
-
 Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
+
 
 class Slotify::TestCase < ActionView::TestCase
   extend Minitest::Spec::DSL
@@ -28,6 +33,8 @@ class Slotify::TestCase < ActionView::TestCase
   include Capybara::Minitest::Assertions
 
   TestController.prepend_view_path "test/fixtures"
+  TestController.prepend ViewHelpers
+
 
   private
 

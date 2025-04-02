@@ -1,0 +1,13 @@
+<div id="before-partial">
+  <h1><%= user_name %></h1>
+  <time><%= birth_date %></time>
+</div>
+
+<%= render "view_helpers" do |partial| %>
+  <% partial.with_user_name "Mr Override" %>
+<% end %>
+
+<div id="after-partial">
+  <h1><%= user_name %></h1>
+  <time><%= birth_date %></time>
+</div>
