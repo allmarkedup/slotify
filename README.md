@@ -1,7 +1,6 @@
 <img src=".github/assets/slotify_wordmark.svg" width="200">
 
-<br>   
-<font size="4">Superpowered slots for ActionView partials.</font>
+#### Superpowered slots for ActionView partials.
 
 ----------
 
