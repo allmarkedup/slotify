@@ -3,9 +3,11 @@
 <hr>
 
 <%= render "example", id: "example-one" do |partial| %>
-  <% partial.with_subtitle do %>
+  <% partial.with_subtitle class: "size-xl" do %>
     This is the <%= tag.em "subtitle" %>
   <% end %>
+
+  <% partial.with_date Time.zone.now.days_ago(3) %>
 
   <% partial.with_website_link "example.com", "https://example.com", target: "_blank", data: {controller: "preview-link"} %>
 

@@ -1,13 +1,12 @@
 <img src=".github/assets/slotify_wordmark.svg" width="200">
 
-<br>   
-<font size="4">Superpowered slots for ActionView partials.</font>
+#### Superpowered slots for ActionView partials.
 
 ----------
 
 ## Overview 
 
-Slotify adds an unobtrusive, ViewComponent-style **slots API** to ActionView partials.
+Slotify adds an unobtrusive but powerful **content slot API** to ActionView partials.
 
 Slots are a convenient way to pass blocks of content in to a partial without having to resort to ugly `<% capture do ... end %>` workarounds or unscoped (global) `<% content_for :foo %>` declarations.
 

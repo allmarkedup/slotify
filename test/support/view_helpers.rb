@@ -4,6 +4,6 @@ module ViewHelpers
   end
 
   def birth_date
-    DateTime.new(1081,4,15).strftime("%d/%m/%Y")
+    DateTime.new(1081, 4, 15).strftime("%d/%m/%Y")
   end
 end

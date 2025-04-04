@@ -15,10 +15,10 @@ module Slotify
         if @strict_slots == ActionView::Template::NONE
           source.sub!(STRICT_SLOTS_REGEX, "")
           strict_slots = $1
-          if strict_slots.nil?
-            @strict_slots = ""
+          @strict_slots = if strict_slots.nil?
+            ""
           else
-            @strict_slots = strict_slots.sub("**", "").strip.delete_suffix(",")
+            strict_slots.sub("**", "").strip.delete_suffix(",")
           end
         end
 
