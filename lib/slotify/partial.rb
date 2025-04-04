@@ -8,7 +8,7 @@ module Slotify
       @view_context = view_context
       @outer_partial = view_context.partial
       @entries = []
-      @strict_slots = false
+      @strict_slots = nil
     end
 
     def content_for(slot_name, fallback_value = nil)
@@ -16,13 +16,8 @@ module Slotify
       raise UnknownSlotError, "unknown slot :#{slot_name}" unless slot_defined?(slot_name)
 
       entries = slot_entries(slot_name)
-
       if entries.none? && !fallback_value.nil?
-        if plural?(slot_name) && fallback_value.is_a?(Array)
-          fallback_value.each { entries << add_entry(slot_name, [_1]) }
-        else
-          entries << add_entry(slot_name, [fallback_value])
-        end
+        entries = add_entries(slot_name, to_array(fallback_value))
       end
 
       singular?(slot_name) ? entries.first : EntryCollection.new(entries)
@@ -56,22 +51,6 @@ module Slotify
       validate_slots!
     end
 
-    def render(target, locals = {}, &block)
-      if target.is_a?(EntryCollection)
-        target.reduce(ActiveSupport::SafeBuffer.new) { |buffer, entry| buffer << render(entry, locals) }
-      elsif target.is_a?(Entry)
-        if locals.key?(:partial) || locals.key?(:locals)
-          partial_path = locals[:partial] || target.to_partial_path
-          options = merge_tag_options(locals.fetch(:locals, {}), target.options)
-          @view_context.render(partial_path, options, &target.block)
-        else
-          target.with_default_options(locals).render_in(@view_context, &target.block)
-        end
-      else
-        @view_context.render(target, locals, &block)
-      end
-    end
-
     def helpers
       @helpers || Helpers.new(@view_context)
     end
@@ -86,11 +65,7 @@ module Slotify
         if singular?(slot_name)
           add_entry(slot_name, args, options, block)
         else
-          collection = args.shift
-          unless collection.respond_to?(:each)
-            raise SlotArgumentError, "first argument for plural slot setter :#{name} must be an array"
-          end
-          collection.each { add_entry(slot_name.singularize, [_1, *args], options, block) }
+          add_entries(slot_name, args.first, options, block)
         end
       else
         helpers.public_send(name, *args, **options, &block)
@@ -108,25 +83,29 @@ module Slotify
     end
 
     def slot_entries(slot_name)
-      @entries.filter { _1.slot_name == slot_name.to_s.singularize.to_sym }
+      @entries.filter { _1.slot_name == singularize(slot_name) }
+    end
+
+    def add_entries(slot_name, collection, options = {}, block = nil)
+      unless collection.respond_to?(:each)
+        raise ArgumentError, "expected array to be passed to slot :#{slot_name} (received #{collection.class.name})"
+      end
+
+      collection.map { add_entry(slot_name, _1, options, block) }
     end
 
     def add_entry(slot_name, args = [], options = {}, block = nil)
-      slot_name = slot_name.to_s.singularize.to_sym
-      if args.first.is_a?(Entry)
-        entry = args.shift
-        entry = entry.to_entry
-        args, options, block = entry.merged_args(args, options, block)
+      with_resolved_args(args, options, block) do |rargs, roptions, rblock|
+        @entries << Entry.new(@view_context, singularize(slot_name), rargs, roptions, rblock)
       end
 
-      @entries << Entry.new(@view_context, slot_name, args, options, block)
       @entries.last
     end
 
     def validate_slots!
       return if @strict_slots.nil?
 
-      singular_slots = @strict_slots.map { _1.to_s.singularize.to_sym }
+      singular_slots = @strict_slots.map { singularize(_1) }
       slots_called = @entries.map(&:slot_name).uniq
       undefined_slots = slots_called - singular_slots
 

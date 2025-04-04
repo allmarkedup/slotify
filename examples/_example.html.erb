@@ -1,37 +1,35 @@
 <%# locals: (id:) -%>
-<%# slots: (title: "Example title", subtitle: nil, website_link:, lists: nil, quotes: nil) -%>
+<%# slots: (title: "Example title", subtitle: nil, website_link: nil, lists: nil, quotes: nil, date: Time.zone.now) -%>
 
 <%= tag.section id: do %>
-  <h1 class="example-title">
+  <h2 class="example-title">
     <%= title %>
-  </h1>
+  </h2> 
 
   <%#
-    Render slot content and options via the tag helper.
-    Additional options are merged with any options provided by the caller.
+    Slot content can be passed directly to helpers such as `content_tag`.
+    Arguments, options and any block content provided when calling the
+    `.with_<slot_name>` method will be merged with those set when rendering
+    the slot content in the partial, a below. 
   %>
-  <%= partial.h2 subtitle, class: "example-subtitle" if subtitle.present? %>
+  <%= content_tag :h3, subtitle, class: "example-subtitleasd" if subtitle.present? %>
   
   <%#
-    Link slot rendered via the link_to helper.
-    This example uses the more verbose `partial.slots.SLOT_NAME`
-    accessor rather than the shorthand 'local variable' style.
+    Link slot content (and options) rendered via the link_to helper.
   %>
-  <p>Example link: <%= partial.link_to website_link, data: {controller: "external-link"} %></p>
-
-  <hr>
+  <p>Example link: <%= link_to website_link, data: {controller: "external-link"} %></p>
 
   <%#
     Renders the `_list.html.erb` partial once for each of the `list` slot entries.
     The slot block content is passed through so that the list item slots can be
     set by the top-level caller.
   %>
-  <%= render lists, title: "Default title" %>
+  <%= render lists %>
 
   <%#
-    The target partial path can be overriden if required:
+    The target partial path can be overriden if required
   %>
-  <%= render lists, partial: "ordered_list", locals: {title: "Default title"} %>
+  <%= render lists.with_partial_path("ordered_list") %>
 
   <hr>
 

@@ -1,5 +1,7 @@
 module Slotify
   class Helpers
+    include Utils
+
     def initialize(view_context)
       @view_context = view_context
     end
@@ -8,24 +10,14 @@ module Slotify
       @view_context.respond_to?(name) || @view_context.tag.respond_to?(name)
     end
 
-    def method_missing(name, *args, **kwargs, &block)
-      entry_arg = args.find { _1.is_a?(EntryCollection) || _1.is_a?(Entry) }
-      if entry_arg
-        args.filter! { _1 != entry_arg }
-        call_helper_with_entries(name, entry_arg, *args, **kwargs, &block)
-      else
-        call_helper(name, *args, **kwargs, &block)
+    def method_missing(name, *args, **options, &block)
+      results = with_resolved_args(args, options, block) do |rargs, roptions, rblock|
+        call_helper(name, *rargs, **roptions.to_h, &rblock)
       end
+      results.reduce(ActiveSupport::SafeBuffer.new) { _1 << _2 }
     end
 
     private
-
-    def call_helper_with_entries(name, entries, *args, **options, &block)
-      EntryCollection.new(entries).reduce(ActiveSupport::SafeBuffer.new) do |buffer, entry|
-        merged_args, merged_options, merged_block = entry.merged_args(args, options, block)
-        buffer << call_helper(name, *merged_args, **merged_options.to_h, &merged_block)
-      end
-    end
 
     def call_helper(name, ...)
       if @view_context.respond_to?(name)

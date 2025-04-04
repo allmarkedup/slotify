@@ -1,16 +1,18 @@
 module Slotify
   module Extensions
     module Base
+      extend SlotifyHelpers
+
+      slotify_helpers(
+        *ActionView::Helpers::UrlHelper.instance_methods(false),
+        *ActionView::Helpers::TagHelper.instance_methods(false)
+      )
+
       attr_reader :partial
 
       def render(target = {}, locals = {}, &block)
         @partial = Slotify::Partial.new(self)
-
-        if target.is_a?(Entry) || target.is_a?(EntryCollection)
-          @partial.render(target, locals, &block)
-        else
-          super
-        end
+        super
       ensure
         @partial = partial.outer_partial
       end

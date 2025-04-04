@@ -14,8 +14,6 @@ class TestApp < Rails::Application
   credentials.secret_key_base = "slotify_secret_key"
 end
 
-
-
 require "capybara/rails"
 require "capybara/dsl"
 require "capybara/minitest"
@@ -26,7 +24,6 @@ require "minitest/reporters"
 
 Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 
-
 class Slotify::TestCase < ActionView::TestCase
   extend Minitest::Spec::DSL
   include Capybara::DSL
@@ -34,7 +31,6 @@ class Slotify::TestCase < ActionView::TestCase
 
   TestController.prepend_view_path "test/fixtures"
   TestController.prepend ViewHelpers
-
 
   private
 
