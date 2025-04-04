@@ -36,7 +36,7 @@ module Slotify
       def strict_locals!
         return super unless strict_slots?
 
-        [strict_slots!, super || "**"].compact.join(", ")
+        [strict_slots!, super].compact.join(", ")
       end
 
       def locals_code
