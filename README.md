@@ -1,6 +1,6 @@
 <img src=".github/assets/slotify_wordmark.svg" width="200">
 
-#### Superpowered slots for ActionView partials.
+#### Superpowered slots for ActionView partials
 
 ----------
 
@@ -10,7 +10,7 @@ Slotify adds an unobtrusive but powerful **content slot API** to ActionView part
 
 Slots are a convenient way to pass blocks of content in to a partial without having to resort to ugly `<% capture do ... end %>` workarounds or unscoped (global) `<% content_for :foo %>` declarations.
 
-Slotified partials are **an excellent tool for building components** in a Rails app if you want to stay close to _The Rails Way™️_ or just want to avoid the additional overhead and learning curve of libraries like [ViewComponent](https://viewcomponent.org/) or [Phlex](https://www.phlex.fun/).
+Slotified partials are **a great tool for building components** in a Rails app if you want to stay close to _The Rails Way™️_ or just want to avoid the additional overhead and learning curve of libraries like [ViewComponent](https://viewcomponent.org/) or [Phlex](https://www.phlex.fun/).
 
 ### 
 
@@ -61,10 +61,11 @@ For example, here our `article` partial is being rendered with content for the `
 > [!NOTE]
 > _If you've ever used [ViewComponent](https://viewcomponent.org) then the above code should also feel quite familiar to you - it's pretty much the same syntax used to provide content to [component slots](https://viewcomponent.org/guide/slots.html)._
 
-The example above just scratches the surface of what Slotify slots can do. You can [jump to a more full-featured example here](#full-example) or read on to learn more...
+The example above just scratches the surface of what Slotify slots can do.
 
+You can [jump to a more full-featured example here](#full-example) or read on to learn more...
 
-## Single vs multiple entry slots
+## Single vs multiple value slots
 
 > _Docs coming soon..._ 
 
@@ -76,7 +77,7 @@ The example above just scratches the surface of what Slotify slots can do. You c
 
 > _Docs coming soon..._ 
 
-## Rendering slots
+## Rendering slot contents
 
 > _Docs coming soon..._ 
 
@@ -98,6 +99,10 @@ Slots are defined using a [strict locals](https://guides.rubyonrails.org/action_
 ### Setting default values
 
 > _Docs coming soon..._ 
+
+### Using alongside strict locals
+
+> _Docs coming soon..._
 
 ## Slotify API
 
