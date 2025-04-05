@@ -1,8 +1,8 @@
 <img src=".github/assets/slotify_wordmark.svg" width="200">
 
-#### Superpowered slots for ActionView partials
+### Superpowered slots for ActionView partials
 
-----------
+---
 
 ## Overview 
 
@@ -22,7 +22,7 @@ Slotify slots are defined using a [strict locals](https://guides.rubyonrails.org
 <%# slots: (slot_name: "default value", optional_slot_name: nil, required_slot_name:) -%>
 ```
 
-Slot content is accessed via standard local variables within the partial. So a simple slot-enabled `article` partial template might look something like this:
+Slot content is accessed via standard local variables within the partial. So a simple, slot-enabled `article` partial template might look something like this:
 
 ```erb
 <!-- _article.html.erb -->
@@ -40,7 +40,7 @@ Slot content is accessed via standard local variables within the partial. So a s
 ```
 
 > [!NOTE]
-> _The above code should feel familiar if you have used partials in the past. This is just regular partial syntax but with `slots` defined instead of `locals` (don't worry - you can still define locals too!)._
+> _The above should feel familiar to anyone who has partials (and strict locals) in the past. This is just regular partial syntax but with `slots` defined instead of `locals` (don't worry - you can still define locals too!)._
 
 When the partial is rendered, a special `partial` object is yielded as an argument to the block. Slot content is set by calling the appropriate `.with_<slot_name>` methods on this partial object.
 
@@ -61,13 +61,11 @@ For example, here our `article` partial is being rendered with content for the `
 > [!NOTE]
 > _If you've ever used [ViewComponent](https://viewcomponent.org) then the above code should also feel quite familiar to you - it's pretty much the same syntax used to provide content to [component slots](https://viewcomponent.org/guide/slots.html)._
 
-The example above just scratches the surface of what Slotify slots can do.
-
-You can [jump to a more full-featured example here](#full-example) or read on to learn more...
+But this example just scratches the surface of what Slotify slots can do! Read on to learn more (or [jump to a more full-featured example here](#full-example)).
 
 ## Single vs multiple value slots
 
-> _Docs coming soon..._ 
+A slot can be either a 'single value' or a 'multiple value' slot.
 
 ## Slot arguments and options
 

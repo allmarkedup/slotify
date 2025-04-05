@@ -15,7 +15,7 @@ class PluralSlotsTest < Slotify::TestCase
         _(page).must_have_css "li.thing", count: 1, text: "Thing 1"
       end
 
-      it "renders multiple entries when called multiple times" do
+      it "renders multiple values when called multiple times" do
         render partial_path do |partial|
           partial.with_item "Item 1"
           partial.with_item "Item 2"

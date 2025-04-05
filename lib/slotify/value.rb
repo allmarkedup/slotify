@@ -1,5 +1,5 @@
 module Slotify
-  class Entry
+  class Value
     include InflectionHelper
 
     attr_reader :slot_name, :args, :block
@@ -16,7 +16,7 @@ module Slotify
     end
 
     def options
-      EntryOptions.new(@view_context, @options)
+      ValueOptions.new(@view_context, @options)
     end
 
     def content
@@ -52,12 +52,12 @@ module Slotify
     alias_method :to_hash, :to_h
 
     def with_partial_path(partial_path)
-      Entry.new(@view_context, @slot_name, @args, options, @block, partial_path:)
+      Value.new(@view_context, @slot_name, @args, options, @block, partial_path:)
     end
 
     def with_default_options(default_options)
       options = TagOptionsMerger.call(default_options, @options)
-      Entry.new(@view_context, @slot_name, @args, options, @block)
+      Value.new(@view_context, @slot_name, @args, options, @block)
     end
 
     def respond_to_missing?(name, include_private = false)

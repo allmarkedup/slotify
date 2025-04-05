@@ -7,27 +7,27 @@ module Slotify
     def initialize(view_context)
       @view_context = view_context
       @outer_partial = view_context.partial
-      @entries = []
+      @values = []
       @strict_slots = nil
     end
 
     def content_for(slot_name, fallback_value = nil)
-      raise SlotsAccessError, "slot content cannot be accessed from outside the partial" unless slots_defined?
+      raise SlotsAccessError, "slot values cannot be accessed from outside the partial" unless slots_defined?
       raise UnknownSlotError, "unknown slot :#{slot_name}" unless slot_defined?(slot_name)
 
-      entries = slot_entries(slot_name)
-      if entries.none? && !fallback_value.nil?
-        entries = add_entries(slot_name, Array(fallback_value))
+      values = slot_values(slot_name)
+      if values.none? && !fallback_value.nil?
+        values = add_values(slot_name, Array(fallback_value))
       end
 
-      singular?(slot_name) ? entries.first : EntryCollection.new(entries)
+      singular?(slot_name) ? values.first : ValueCollection.new(values)
     end
 
     def content_for?(slot_name)
-      raise SlotsAccessError, "slot content cannot be accessed from outside the partial" unless slots_defined?
+      raise SlotsAccessError, "slot values cannot be accessed from outside the partial" unless slots_defined?
       raise UnknownSlotError, "unknown slot :#{slot_name}" unless slot_defined?(slot_name)
 
-      slot_entries(slot_name).any?
+      slot_values(slot_name).any?
     end
 
     def capture(*args, &block)
@@ -44,7 +44,7 @@ module Slotify
 
     def slot_locals
       pairs = @strict_slots.map do |slot_name|
-        values = slot_entries(slot_name)
+        values = slot_values(slot_name)
         values = singular?(slot_name) ? values&.first : values
         [slot_name, values]
       end
@@ -68,9 +68,10 @@ module Slotify
       if name.start_with?("with_")
         slot_name = name.to_s.delete_prefix("with_")
         if singular?(slot_name)
-          add_entry(slot_name, args, options, block)
+          add_value(slot_name, args, options, block)
         else
-          add_entries(slot_name, args.first, options, block)
+          collection = args.first
+          add_values(slot_name, collection, options, block)
         end
       end
     end
@@ -85,29 +86,29 @@ module Slotify
       slot_name && slots_defined? && @strict_slots.include?(slot_name.to_sym)
     end
 
-    def slot_entries(slot_name)
-      @entries.filter { _1.slot_name == singularize(slot_name) }
+    def slot_values(slot_name)
+      @values.filter { _1.slot_name == singularize(slot_name) }
     end
 
-    def add_entries(slot_name, collection, options = {}, block = nil)
-      collection.map { add_entry(slot_name, _1, options, block) }
+    def add_values(slot_name, collection, options = {}, block = nil)
+      collection.map { add_value(slot_name, _1, options, block) }
     rescue NoMethodError
       raise SlotArgumentError, "expected array to be passed to slot :#{slot_name} (received #{collection.class.name})"
     end
 
-    def add_entry(slot_name, args = [], options = {}, block = nil)
+    def add_value(slot_name, args = [], options = {}, block = nil)
       MethodArgsResolver.call(args, options, block) do
-        @entries << Entry.new(@view_context, singularize(slot_name), _1, _2, _3)
+        @values << Value.new(@view_context, singularize(slot_name), _1, _2, _3)
       end
 
-      @entries.last
+      @values.last
     end
 
     def validate_slots!
       return if @strict_slots.nil?
 
       singular_slots = @strict_slots.map { singularize(_1) }
-      slots_called = @entries.map(&:slot_name).uniq
+      slots_called = @values.map(&:slot_name).uniq
       undefined_slots = slots_called - singular_slots
 
       if undefined_slots.any?
@@ -115,8 +116,8 @@ module Slotify
       end
 
       @strict_slots.filter { singular?(_1) }.each do |slot_name|
-        entries = slot_entries(slot_name)
-        raise MultipleSlotEntriesError, "slot :#{slot_name} called #{entries.size} times (expected 1)" if entries.many?
+        values = slot_values(slot_name)
+        raise MultipleSlotEntriesError, "slot :#{slot_name} called #{values.size} times (expected 1)" if values.many?
       end
     end
   end
