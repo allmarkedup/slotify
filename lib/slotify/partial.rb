@@ -1,6 +1,6 @@
 module Slotify
   class Partial
-    include Utils
+    include InflectionHelper
 
     attr_reader :outer_partial
 
@@ -17,7 +17,7 @@ module Slotify
 
       entries = slot_entries(slot_name)
       if entries.none? && !fallback_value.nil?
-        entries = add_entries(slot_name, to_array(fallback_value))
+        entries = add_entries(slot_name, Array(fallback_value))
       end
 
       singular?(slot_name) ? entries.first : EntryCollection.new(entries)
@@ -43,7 +43,7 @@ module Slotify
     end
 
     def slot_locals
-      @strict_slots.map { [_1, content_for(_1).presence] }.to_h.compact
+      @strict_slots.map { [_1, content_for(_1)] }.to_h.compact
     end
 
     def with_strict_slots(strict_slot_names)
@@ -51,12 +51,8 @@ module Slotify
       validate_slots!
     end
 
-    def helpers
-      @helpers || Helpers.new(@view_context)
-    end
-
     def respond_to_missing?(name, include_private = false)
-      name.start_with?("with_") || helpers.respond_to?(name)
+      name.start_with?("with_")
     end
 
     def method_missing(name, *args, **options, &block)
@@ -67,8 +63,6 @@ module Slotify
         else
           add_entries(slot_name, args.first, options, block)
         end
-      else
-        helpers.public_send(name, *args, **options, &block)
       end
     end
 
@@ -87,16 +81,14 @@ module Slotify
     end
 
     def add_entries(slot_name, collection, options = {}, block = nil)
-      unless collection.respond_to?(:each)
-        raise ArgumentError, "expected array to be passed to slot :#{slot_name} (received #{collection.class.name})"
-      end
-
       collection.map { add_entry(slot_name, _1, options, block) }
+    rescue NoMethodError
+      raise ArgumentError, "expected array to be passed to slot :#{slot_name} (received #{collection.class.name})"
     end
 
     def add_entry(slot_name, args = [], options = {}, block = nil)
-      with_resolved_args(args, options, block) do |rargs, roptions, rblock|
-        @entries << Entry.new(@view_context, singularize(slot_name), rargs, roptions, rblock)
+      MethodArgsResolver.call(args, options, block) do
+        @entries << Entry.new(@view_context, singularize(slot_name), _1, _2, _3)
       end
 
       @entries.last

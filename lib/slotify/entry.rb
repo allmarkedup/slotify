@@ -1,16 +1,16 @@
 module Slotify
   class Entry
-    include Utils
+    include InflectionHelper
 
     attr_reader :slot_name, :args, :block
 
     delegate :presence, to: :@content
 
-    def initialize(view_context, slot_name, args = [], options = {}, block = nil, partial_path: nil, **kwargs)
+    def initialize(view_context, slot_name, args = [], options = {}, block = nil, partial_path: nil)
       @view_context = view_context
       @slot_name = slot_name.to_sym
       @args = args
-      @options = options
+      @options = options.to_h
       @block = block
       @partial_path = partial_path
     end
@@ -52,12 +52,12 @@ module Slotify
     alias_method :to_hash, :to_h
 
     def with_partial_path(partial_path)
-      Entry.new(@view_context, @slot_name, @args, options.to_h, @block, partial_path:)
+      Entry.new(@view_context, @slot_name, @args, options, @block, partial_path:)
     end
 
     def with_default_options(default_options)
-      options = merge_tag_options(default_options, @options)
-      Entry.new(@view_context, @slot_name, @args, options.to_h, @block)
+      options = TagOptionsMerger.call(default_options, @options)
+      Entry.new(@view_context, @slot_name, @args, options, @block)
     end
 
     def respond_to_missing?(name, include_private = false)

@@ -5,6 +5,6 @@
 
 <% if items.any? %>
   <%= tag.ul class: "list" do %>
-    <%= partial.li items, class: "list-item" %>
+    <%= content_tag :li, items, class: "list-item" %>
   <% end %>
 <% end %>

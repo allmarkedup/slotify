@@ -5,10 +5,8 @@ module Slotify
       method_names.each do |name|
         proxy.define_method(name) do |*args, **kwargs, &block|
           return super(*args, **kwargs, &block) if args.none?
-          results = Utils.with_resolved_args(args, kwargs, block) do
-            super(*_1, **_2.to_h, &_3 || block)
-          end
 
+          results = MethodArgsResolver.call(args, kwargs, block) { super(*_1, **_2, &_3) }
           results.reduce(ActiveSupport::SafeBuffer.new) { _1 << _2 }
         end
       end

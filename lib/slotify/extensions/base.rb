@@ -3,10 +3,8 @@ module Slotify
     module Base
       extend SlotifyHelpers
 
-      slotify_helpers(
-        *ActionView::Helpers::UrlHelper.instance_methods(false),
-        *ActionView::Helpers::TagHelper.instance_methods(false)
-      )
+      slotify_helpers :url_for, :link_to, :button_to, :link_to_unless_current,
+        :link_to_unless, :link_to_if, :mail_to, :sms_to, :phone_to, :tag, :content_tag
 
       attr_reader :partial
 
