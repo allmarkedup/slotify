@@ -6,37 +6,35 @@ on:
     branches: [main]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Lint code for consistent style
-        run: bundle exec standardrb
-
   test:
+    name: test (${{ matrix.rails_version }}, ${{ matrix.ruby_version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby_version: "3.1"
+            rails_version: "7.1"
+          - ruby_version: "3.2"
+            rails_version: "7.2"
+          - ruby_version: "3.3"
+            rails_version: "8.0"
+          - ruby_version: "head"
+            rails_version: "main"
+    env:
+      BUNDLE_GEMFILE: gemfiles/rails_${{ matrix.rails_version }}.gemfile
     steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git pkg-config
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Run tests
-        env:
-          RAILS_ENV: test
-        run: bin/test
+    - uses: actions/checkout@v4.1.1
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby_version }}
+        bundler-cache: true
+    - name: Build and test with Rake
+      run: |
+        bundle exec appraisal rails-${{ matrix.rails_version }} bundle
+        bundle exec appraisal rails-${{ matrix.rails_version }} bin/test
+      env:
+        RAISE_ON_WARNING: 1
+        RAILS_VERSION: ${{ matrix.rails_version }}
+        RUBY_VERSION: ${{ matrix.ruby_version }}
