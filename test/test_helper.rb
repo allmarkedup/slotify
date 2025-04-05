@@ -1,18 +1,16 @@
 ENV["RAILS_ENV"] = "test"
 
-require "action_view"
-require "action_controller/railtie"
-require "slotify"
-
+require "rails"
 require "rails/test_help"
-
-require "support/view_helpers"
+require "slotify"
 
 class TestApp < Rails::Application
   config.root = __dir__
-  config.hosts << "example.com"
+  config.hosts << "slotify.build"
   credentials.secret_key_base = "slotify_secret_key"
 end
+
+require "support/view_helpers"
 
 require "capybara/rails"
 require "capybara/dsl"

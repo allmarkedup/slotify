@@ -2,7 +2,7 @@
 
 <hr>
 
-<%= render "example", id: "example-one" do |partial| %>
+<%= render "example", id: "example-one", foo: "bat" do |partial| %>
   <% partial.with_subtitle class: "size-xl" do %>
     This is the <%= tag.em "subtitle" %>
   <% end %>
