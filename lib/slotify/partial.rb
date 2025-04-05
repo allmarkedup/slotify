@@ -92,7 +92,7 @@ module Slotify
     def add_entries(slot_name, collection, options = {}, block = nil)
       collection.map { add_entry(slot_name, _1, options, block) }
     rescue NoMethodError
-      raise ArgumentError, "expected array to be passed to slot :#{slot_name} (received #{collection.class.name})"
+      raise SlotArgumentError, "expected array to be passed to slot :#{slot_name} (received #{collection.class.name})"
     end
 
     def add_entry(slot_name, args = [], options = {}, block = nil)

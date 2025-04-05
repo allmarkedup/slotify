@@ -1,6 +1,6 @@
 module Slotify
-  module SlotifyHelpers
-    def slotify_helpers(*method_names)
+  module HelpersConcern
+    def make_compatible_with_slots(*method_names)
       proxy = Module.new
       method_names.each do |name|
         proxy.define_method(name) do |*args, **kwargs, &block|

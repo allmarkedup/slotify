@@ -1,10 +1,7 @@
 module Slotify
   module Extensions
     module Base
-      extend SlotifyHelpers
-
-      slotify_helpers :url_for, :link_to, :button_to, :link_to_unless_current,
-        :link_to_unless, :link_to_if, :mail_to, :sms_to, :phone_to, :tag, :content_tag
+      extend HelpersConcern
 
       attr_reader :partial
 
@@ -29,6 +26,9 @@ module Slotify
       ensure
         @partial = inner_partial
       end
+
+      make_compatible_with_slots :url_for, :link_to, :button_to, :link_to_unless_current,
+        :link_to_unless, :link_to_if, :mail_to, :sms_to, :phone_to, :tag, :content_tag
     end
   end
 end
