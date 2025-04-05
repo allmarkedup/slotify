@@ -43,7 +43,16 @@ module Slotify
     end
 
     def slot_locals
-      @strict_slots.map { [_1, content_for(_1)] }.to_h.compact
+      pairs = @strict_slots.map do |slot_name|
+        values = slot_entries(slot_name)
+        values = singular?(slot_name) ? values&.first : values
+        [slot_name, values]
+      end
+      pairs.filter do |key, value|
+        # keep empty strings as local value but filter out empty arrays
+        # and objects so they don't override any default values set via strict slots.
+        value.is_a?(String) || value&.present?
+      end.to_h
     end
 
     def with_strict_slots(strict_slot_names)

@@ -6,7 +6,7 @@ class StrictLocalsTest < Slotify::TestCase
 
     it "has the expected locals available in the partial" do
       locals = { title: "Title from locals", subtitle: "Subtitle from locals" }
-      render partial: view_path, locals: do |partial|
+      render view_path, **locals do |partial|
         partial.with_description do
           "This is the description"
         end
