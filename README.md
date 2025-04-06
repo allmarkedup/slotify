@@ -268,7 +268,7 @@ Slotify was inspired by the excellent [nice_partials gem](https://github.com/bul
     <%= title %>
   </h1>
   
-  <p>Example link: <%= partial.link_to website_link, data: {controller: "external-link"} %></p>
+  <p>Example link: <%= link_to website_link, data: {controller: "external-link"} %></p>
 
   <%= render lists, title: "Default title" %>
 
@@ -294,7 +294,7 @@ Slotify was inspired by the excellent [nice_partials gem](https://github.com/bul
 
 <% if items.any? %>
   <%= tag.ul class: "list" do %>
-    <%= partial.li items, class: "list-item" %>
+    <%= content_tag :li, items, class: "list-item" %>
   <% end %>
 <% end %>
 ```
