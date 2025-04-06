@@ -2,23 +2,25 @@
 
 
 
-### Superpowered slots for ActionView partials
+<br>
 
----
+## Superpowered slots for ActionView partials
 
-## Overview 
-
-Slotify adds an unobtrusive (but powerful!) **content slot API** to ActionView partials.
+Slotify adds an unobtrusive (but powerful!) **content slot API** to ActionView partials. 
 
 Slots are a convenient way to pass blocks of content in to a partial without having to resort to ugly `<% capture do ... end %>` workarounds or unscoped (global) `<% content_for :foo %>` declarations.
 
 Slotified partials are a great way to build components in a Rails app without the additional overhead and learning curve of libraries like [ViewComponent](https://viewcomponent.org/) or [Phlex](https://www.phlex.fun/).
 
+> [!CAUTION]
+> Slotify is still in a very early stage of development.
+The documentation is still quite sparse and the API could change at any point prior to a `v1.0` release.
+
 ### 
 
 ## Slotify basics
 
-Slotify slots are defined using a **[strict locals](https://guides.rubyonrails.org/action_view_overview.html#strict-locals)-style magic comment** at the top of partial templates ([more details here](#defining-slots)).
+Slotify slots are defined using a **[strict locals](https://guides.rubyonrails.org/action_view_overview.html#strict-locals)-style magic comment** at the top of **partial templates** ([more details here](#defining-slots)).
 
 ```erb
 <%# slots: (slot_name: "default value", optional_slot_name: nil, required_slot_name:) -%>
