@@ -1,5 +1,4 @@
 <img src=".github/assets/slotify_wordmark.svg" width="200">
-
 <br>
 
 <p><a href="https://rubygems.org/gems/slotify"><img src="https://img.shields.io/gem/v/slotify" alt="Gem version"></a>
@@ -14,7 +13,7 @@ Slots are a convenient way to pass blocks of content in to a partial without hav
 Slotified partials are a great way to build components in a Rails app without the additional overhead and learning curve of libraries like [ViewComponent](https://viewcomponent.org/) or [Phlex](https://www.phlex.fun/).
 
 > [!CAUTION]
-> Slotify is still in a very early stage of development.
+> Slotify is still in a early stage of development.
 The documentation is still quite sparse and the API could change at any point prior to a `v1.0` release.
 
 ### 
@@ -267,9 +266,20 @@ The slot writer methods for multiple-value slots use the **singluar form** of th
 </ul>
 ```
 
-### Passing slot content to helpers
+### Using slots with helpers
 
-> _Docs coming soon..._ 
+```erb
+<% partial.with_title "The title", class: "color-hotpink" %>
+<% partial.with_website_link "Example website", "https://example.com", data: {controller: "external-link"} %>
+```
+
+```erb
+<%= content_tag :h1, title %> <!-- <h1 class="color-hotpink">The title</h1> -->
+<%= content_tag :h1, title, class: "example-title" %> <!-- <h1 class="example-title color-hotpink">The title</h1> -->
+<%= link_to website_link %> <!-- <a href="https://example.com" data-controller="external-link">Example website</a> -->
+```
+
+> _More docs coming soon..._ 
 
 ### Rendering slots
 
