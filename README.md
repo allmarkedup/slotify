@@ -1,8 +1,9 @@
 <img src=".github/assets/slotify_wordmark.svg" width="200">
 
-
-
 <br>
+
+<p><a href="https://rubygems.org/gems/slotify"><img src="https://img.shields.io/gem/v/slotify" alt="Gem version"></a>
+<a href="https://github.com/allmarkedup/slotify/actions/workflows/ci.yml"><img src="https://github.com/allmarkedup/slotify/actions/workflows/ci.yml/badge.svg" alt="CI status"></a></p>
 
 ## Superpowered slots for ActionView partials
 
@@ -23,7 +24,7 @@ The documentation is still quite sparse and the API could change at any point pr
 Slotify slots are defined using a **[strict locals](https://guides.rubyonrails.org/action_view_overview.html#strict-locals)-style magic comment** at the top of **partial templates** ([more details here](#defining-slots)).
 
 ```erb
-<%# slots: (slot_name: "default value", optional_slot_name: nil, required_slot_name:) -%>
+<%# slots: (title:, body: nil, theme: "default") -%>
 ```
 
 Slot content is accessed via **standard local variables** within the partial. So a simple, slot-enabled `article` partial template might look something like this:
@@ -31,10 +32,10 @@ Slot content is accessed via **standard local variables** within the partial. So
 ```erb
 <!-- _article.html.erb -->
 
-<%# slots: (heading: "Default title", body: nil) -%>
+<%# slots: (title: "Default title", body: nil) -%>
 
 <article>
-  <h1><%= heading %></h1>
+  <h1><%= title %></h1>
   <% if body.present? %>
     <div>
       <%= body %>
@@ -48,11 +49,11 @@ Slot content is accessed via **standard local variables** within the partial. So
 
 When the partial is rendered, a special `partial` object is yielded as an argument to the block. Slot content is set by calling the appropriate `#with_<slot_name>` methods on this partial object.
 
-For example, here our `article` partial is being rendered with content for the `heading` and `body` slots that were defined above:
+For example, here our `article` partial is being rendered with content for the `title` and `body` slots that were defined above:
 
 ```erb
 <%= render "article" do |partial| %>
-  <% partial.with_heading "This is a title" %>
+  <% partial.with_title "This is a title" %>
   <% partial.with_body do %>
     <p>You can use <%= tag.strong "markup" %> within slot content blocks without
       having to worry about marking the output as <code>html_safe</code> later.</p>
@@ -73,7 +74,7 @@ But this example just scratches the surface of what Slotify slots can do! Read o
 Slots are defined using a [strict locals](https://guides.rubyonrails.org/action_view_overview.html#strict-locals)-style magic comment at the top of the partial template. The `slots:` signature uses the same syntax as standard Ruby method signatures:
 
 ```erb
-<%# slots: (title:, summary: "No summary available", author: nil) -%>
+<%# slots: (title:, body: "No content available", author: nil) -%>
 ```
 
 #### Required slots
@@ -112,11 +113,11 @@ either above or below the `slots` definition.
 <!-- _article.html.erb -->
 
 <%# locals: (title:) -%>
-<%# slots: (summary: "No summary available") -%>
+<%# slots: (body: "No content available") -%>
 
 <article>
   <h1><%= title %></h1>
-  <div><%= summary %></div>
+  <div><%= body %></div>
 </article>
 ```
 
@@ -124,26 +125,70 @@ Locals are provided when rendering the partial in the usual way.
 
 ```erb
 <%= render "article", title: "Article title here" do |partial| %>
-  <% partial.with_summary do %>
-    <p>Summary content here...</p>
+  <% partial.with_body do %>
+    <p>Body content here...</p>
   <% end %>
 <% end %>
 ```
 
-### Slot content and options
+### Setting slot values
 
-Content is passed into slots using dynamically generated `partial#with_<slot_name>` methods.
+Content is passed into slots using dynamically generated `partial#with_<slot_name>` writer methods.
 
 Content can be provided as either the **first argument** or **as a block** when calling these methods at render time.
-The following `#with_title` calls are both equivalent:
+The following two examples are equivalent:
 
 ```erb
 <%= render "example" do |partial| %>
   <% partial.with_title "Title passed as argument" %>
+<% end %>
+```
+
+```erb
+<%= render "example" do |partial| %>
   <% partial.with_title do %>
     Title passed as block content
   <% end %>
 <% end %>
+```
+
+> [!TIP]
+> Block content is generally better suited for longer-form content containing HTML tags because it will not need to be marked
+as `html_safe` when used in the partial template.
+
+The content will be available as a local variable in the partial template whichever way it is provided.
+
+```erb
+<%# slots: (title:) -%>
+<h1><%= title %></h1> 
+```
+
+### Slot options
+
+The slot value writer methods also accept optional arbitrary keyword arguments.
+These can then be accessed in the partial template via the `.options` method on the slot variable.
+
+```erb
+<%= render "example" do |partial| %>
+  <% partial.with_title "The title", class: "color-hotpink", data: {controller: "fancy-title"} %>
+<% end %>
+```
+
+```erb
+<%# slots: (title:) -%>
+
+<%= title.options.keys %> <!-- [:class, :data] -->
+<%= title %> <!-- The title -->
+```
+
+Slot options can be useful for providing tag attributes when rendering slot content or rendering variants
+of a slot based on an option value.
+
+When rendered as a string the options are passed through the Rails `tag.attributes` helper to generate an HTML tag attributes string:
+
+```erb
+<h1 <%= title.options %>><%= title %></h1> 
+<!-- <h1 class="color-hotpink" data-controller="fancy-title">The title</h1> -->
 ```
 
 ### Slot types
@@ -196,7 +241,9 @@ Multiple-value slots are defined using a **plural** slot name:
 ```
 
 Multiple-value slots can be called as many times as needed
-and their corresponding template variable represents an array of values:
+and their corresponding template variable represents an array of values.
+
+The slot writer methods for multiple-value slots use the **singluar form** of the slot name (e.g. `#with_item` for the `items` slot).
 
 ```erb
 <%= render "example" do |partial| %>
