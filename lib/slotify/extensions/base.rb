@@ -3,22 +3,7 @@ module Slotify
     module Base
       extend HelpersConcern
 
-      attr_reader :partial
-
-      def render(target = {}, locals = {}, &block)
-        @partial = Slotify::Partial.new(self)
-        super
-      ensure
-        @partial = partial.outer_partial
-      end
-
-      def _layout_for(*args, &block)
-        if block && args.first.is_a?(Symbol)
-          capture_with_outer_partial_access(*args, &block)
-        else
-          super
-        end
-      end
+      attr_accessor :partial
 
       def capture_with_outer_partial_access(*args, &block)
         inner_partial, @partial = partial, partial.outer_partial

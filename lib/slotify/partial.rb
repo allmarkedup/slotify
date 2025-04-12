@@ -12,7 +12,6 @@ module Slotify
     end
 
     def content_for(slot_name, fallback_value = nil)
-      raise SlotsAccessError, "slot values cannot be accessed from outside the partial" unless slots_defined?
       raise UnknownSlotError, "unknown slot :#{slot_name}" unless slot_defined?(slot_name)
 
       values = slot_values(slot_name)
@@ -24,7 +23,6 @@ module Slotify
     end
 
     def content_for?(slot_name)
-      raise SlotsAccessError, "slot values cannot be accessed from outside the partial" unless slots_defined?
       raise UnknownSlotError, "unknown slot :#{slot_name}" unless slot_defined?(slot_name)
 
       slot_values(slot_name).any?
@@ -83,7 +81,7 @@ module Slotify
     end
 
     def slot_defined?(slot_name)
-      slot_name && slots_defined? && @strict_slots.include?(slot_name.to_sym)
+      slot_name && (@strict_slots.nil? || @strict_slots.include?(slot_name.to_sym))
     end
 
     def slot_values(slot_name)
