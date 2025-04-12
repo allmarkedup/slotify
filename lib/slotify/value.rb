@@ -4,7 +4,7 @@ module Slotify
 
     attr_reader :slot_name, :args, :block
 
-    delegate :presence, to: :@content
+    delegate :presence, :to_s, :to_str, to: :content
 
     def initialize(view_context, slot_name, args = [], options = {}, block = nil, partial_path: nil)
       @view_context = view_context
@@ -20,20 +20,15 @@ module Slotify
     end
 
     def content
-      body = if @block && @block.arity == 0
-        @view_context.capture(&@block)
+      if @block && @block.arity == 0
+        body = @view_context.capture(&@block)
+        ActiveSupport::SafeBuffer.new(body.presence || "")
+      elsif args.first.is_a?(String)
+        ActiveSupport::SafeBuffer.new(args.first)
       else
-        begin
-          args.first.to_str
-        rescue NoMethodError
-          ""
-        end
+        args.first
       end
-      ActiveSupport::SafeBuffer.new(body.presence || "")
     end
-
-    alias_method :to_s, :content
-    alias_method :to_str, :content
 
     def present?
       @args.present? || @options.present? || @block
@@ -64,10 +59,14 @@ module Slotify
       name.start_with?("to_") || super
     end
 
-    def method_missing(name, *args, **options)
-      if name.start_with?("to_") && args.none?
-        @args.first.public_send(name)
+    def method_missing(name, ...)
+      if name.start_with?("to_")
+        @args.first.public_send(name, ...)
       end
+    end
+
+    def [](key)
+      key.is_a?(Integer) ? @args[key] : super
     end
 
     def render_in(view_context, &block)
