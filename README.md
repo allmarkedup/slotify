@@ -62,7 +62,83 @@ For example, here our `article` partial is being rendered with content for the `
 > [!NOTE]
 > _If you've ever used [ViewComponent](https://viewcomponent.org) then the above code should also feel quite familiar to you - it's pretty much the same syntax used to provide content to [component slots](https://viewcomponent.org/guide/slots.html)._
 
-But this example just scratches the surface of what Slotify slots can do! Read on to learn more (or [jump to a more full-featured example here](#full-example)).
+But this example just scratches the surface of what Slotify slots can do. Have a look at the more full-featured example below or jump to [the usage information](#usage).
+
+<a name="full-example" id="full-example"></a>
+<details>
+<summary><h3>More full-featured example</h3></summary>
+
+```erb
+<!-- views/_example.html.erb -->
+
+<%# locals: (id:) -%>
+<%# slots: (title: "Example title", lists: nil, quotes: nil, website_link:) -%>
+
+<%= tag.section id: do %>
+  <h1 class="example-title">
+    <%= title %>
+  </h1>
+  
+  <p>Example link: <%= link_to website_link, data: {controller: "external-link"} %></p>
+
+  <%= render lists, title: "Default title" %>
+
+  <% if quotes.any? %>
+    <h3>Quotes</h3>
+    <% quotes.each do |quote| %>
+      <blockquote <%= quote.options.except(:citation) %>>
+        <%= quote %>
+        <%== "&mdash; #{tag.cite(quote.options.citation)}" if quote.options.citation.present? %>
+      </blockquote>
+    <% end %>
+  <% end %>
+<% end %>
+```
+
+```erb
+<!-- views/_list.html.erb -->
+
+<%# locals: (title:) -%>
+<%# slots: (items: nil) -%>
+ 
+<h3><%= title %></h3>
+
+<% if items.any? %>
+  <%= tag.ul class: "list" do %>
+    <%= content_tag :li, items, class: "list-item" %>
+  <% end %>
+<% end %>
+```
+
+```erb
+<!-- views/slotify.html.erb -->
+
+<%= render "example", id: "slotify-example" do |partial| %>
+  <% partial.with_subtitle do %>
+    This is the <%= tag.em "subtitle" %>
+  <% end %>
+
+  <% partial.with_website_link "example.com", "https://example.com", target: "_blank", data: {controller: "preview-link"} %>
+
+  <% partial.with_list do |list| %>
+    <% list.with_item "first thing" %> 
+    <% list.with_item "second thing", class: "text-green-700" %>
+    <% list.with_item "third thing" %>
+  <% end %>
+
+  <% partial.with_quote citation: "A. Person", class: "text-lg" do %>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+  <% end %>
+
+  <% partial.with_quote do %>
+    <p>Non quos explicabo eius hic quaerat laboriosam incidunt numquam.</p>
+  <% end %>
+<% end %>
+```
+
+</details>
+
+---
 
 ## Usage
 
@@ -415,78 +491,72 @@ Slotify was inspired by the excellent [nice_partials gem](https://github.com/bul
 
 `nice_partials` provides very similar functionality to Slotify but takes a slightly different approach/style. So if you are not convinced by Slotify then definitely [check it out](https://github.com/bullet-train-co/nice_partials)!
 
---- 
+## Benchmarks
 
-<a name="full-example" id="full-example"></a>
+Slotify is still in the early stages of development and no attempt has yet been made to optimise rendering performance.
 
-## A more full-featured example
+Below are some initial (crude) benchmarking comparisons with other similar gems.
 
-```erb
-<!-- views/_example.html.erb -->
+> [!TIP]
+> Benchmarks can be run using the `bin/benchmarks` command from the repository root.
 
-<%# locals: (id:) -%>
-<%# slots: (title: "Example title", lists: nil, quotes: nil, website_link:) -%>
-
-<%= tag.section id: do %>
-  <h1 class="example-title">
-    <%= title %>
-  </h1>
-  
-  <p>Example link: <%= link_to website_link, data: {controller: "external-link"} %></p>
-
-  <%= render lists, title: "Default title" %>
-
-  <% if quotes.any? %>
-    <h3>Quotes</h3>
-    <% quotes.each do |quote| %>
-      <blockquote <%= quote.options.except(:citation) %>>
-        <%= quote %>
-        <%== "&mdash; #{tag.cite(quote.options.citation)}" if quote.options.citation.present? %>
-      </blockquote>
-    <% end %>
-  <% end %>
-<% end %>
 ```
+✨🦄 ACTION_VIEW 🦄✨
 
-```erb
-<!-- views/_list.html.erb -->
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            no slots    12.997k i/100ms
+               slots    10.891k i/100ms
+Calculating -------------------------------------
+            no slots    125.622k (± 5.4%) i/s    (7.96 μs/i) -      1.261M in  10.072521s
+               slots    108.468k (± 3.3%) i/s    (9.22 μs/i) -      1.089M in  10.053026s
 
-<%# locals: (title:) -%>
-<%# slots: (items: nil) -%>
- 
-<h3><%= title %></h3>
+Comparison:
+            no slots:   125621.9 i/s
+               slots:   108467.5 i/s - 1.16x  slower
 
-<% if items.any? %>
-  <%= tag.ul class: "list" do %>
-    <%= content_tag :li, items, class: "list-item" %>
-  <% end %>
-<% end %>
+
+✨🦄 NICE_PARTIALS 🦄✨
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            no slots    11.822k i/100ms
+               slots     4.204k i/100ms
+Calculating -------------------------------------
+            no slots    114.190k (± 4.7%) i/s    (8.76 μs/i) -      1.147M in  10.069870s
+               slots     41.138k (± 4.3%) i/s   (24.31 μs/i) -    411.992k in  10.039730s
+
+Comparison:
+            no slots:   114190.2 i/s
+               slots:    41137.9 i/s - 2.78x  slower
+
+
+✨🦄 VIEW_COMPONENT 🦄✨
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            no slots    20.329k i/100ms
+               slots     7.409k i/100ms
+Calculating -------------------------------------
+            no slots    196.288k (± 4.7%) i/s    (5.09 μs/i) -      1.972M in  10.073103s
+               slots     71.311k (± 5.0%) i/s   (14.02 μs/i) -    718.673k in  10.108426s
+
+Comparison:
+            no slots:   196287.6 i/s
+               slots:    71310.5 i/s - 2.75x  slower
+
+
+✨🦄 SLOTIFY 🦄✨
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            no slots    10.883k i/100ms
+               slots    77.000 i/100ms
+Calculating -------------------------------------
+            no slots    110.153k (± 4.8%) i/s    (9.08 μs/i) -      1.099M in  10.009002s
+               slots    789.118 (± 4.1%) i/s    (1.27 ms/i) -      7.931k in  10.071749s
+
+Comparison:
+            no slots:   110152.8 i/s
+               slots:      789.1 i/s - 139.59x  slower
 ```
-
-```erb
-<!-- views/slotify.html.erb -->
-
-<%= render "example", id: "slotify-example" do |partial| %>
-  <% partial.with_subtitle do %>
-    This is the <%= tag.em "subtitle" %>
-  <% end %>
-
-  <% partial.with_website_link "example.com", "https://example.com", target: "_blank", data: {controller: "preview-link"} %>
-
-  <% partial.with_list do |list| %>
-    <% list.with_item "first thing" %> 
-    <% list.with_item "second thing", class: "text-green-700" %>
-    <% list.with_item "third thing" %>
-  <% end %>
-
-  <% partial.with_quote citation: "A. Person", class: "text-lg" do %>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-  <% end %>
-
-  <% partial.with_quote do %>
-    <p>Non quos explicabo eius hic quaerat laboriosam incidunt numquam.</p>
-  <% end %>
-<% end %>
-```
-
-
