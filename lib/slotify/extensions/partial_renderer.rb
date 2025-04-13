@@ -6,8 +6,9 @@ module Slotify
 
         return super unless template.strict_slots?
 
-        view.capture_with_outer_partial_access(&block) if block
         partial.with_strict_slots(template.strict_slots_keys)
+
+        view.capture_with_outer_partial_access(&block) if block
         locals = locals.merge(partial.slot_locals)
 
         decorate_strict_slots_errors do

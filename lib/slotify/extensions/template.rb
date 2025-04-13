@@ -42,7 +42,7 @@ module Slotify
       def locals_code
         return super unless strict_slots?
         strict_slots_keys.each_with_object(+super) do |key, code|
-          code << "#{key} = partial.content_for(:#{key}, binding.local_variable_get(:#{key}));"
+          code << "partial.set_slot_default(:#{key}, binding.local_variable_get(:#{key})); #{key} = partial.public_send(:#{key});"
         end
       end
     end

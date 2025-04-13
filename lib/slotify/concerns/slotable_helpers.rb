@@ -1,5 +1,5 @@
 module Slotify
-  module HelpersConcern
+  module SlotableHelpers
     def make_compatible_with_slots(*method_names)
       proxy = Module.new
       method_names.each do |name|

@@ -11,15 +11,10 @@ module Slotify
       @strict_slots = nil
     end
 
-    def content_for(slot_name, fallback_value = nil)
+    def content_for(slot_name)
       raise UnknownSlotError, "unknown slot :#{slot_name}" unless slot_defined?(slot_name)
 
-      values = slot_values(slot_name)
-      if values.none? && !fallback_value.nil?
-        values = add_values(slot_name, Array(fallback_value))
-      end
-
-      singular?(slot_name) ? values.first : ValueCollection.new(values)
+      singular?(slot_name) ? slot_values(slot_name).first : ValueCollection.new(slot_values(slot_name))
     end
 
     def content_for?(slot_name)
@@ -40,12 +35,27 @@ module Slotify
       end
     end
 
+    def content
+      self.yield
+    end
+
+    def set_slot_default(slot_name, default_value)
+      raise UnknownSlotError, "unknown slot :#{slot_name}" unless slot_defined?(slot_name)
+
+      if slot_values(slot_name).none? && !default_value.nil?
+        add_values(slot_name, Array.wrap(default_value))
+      end
+    end
+
     def slot_locals
+      validate_slots!
+
       pairs = @strict_slots.map do |slot_name|
         values = slot_values(slot_name)
         values = singular?(slot_name) ? values&.first : values
         [slot_name, values]
       end
+
       pairs.filter do |key, value|
         # keep empty strings as local value but filter out empty arrays
         # and objects so they don't override any default values set via strict slots.
@@ -55,11 +65,10 @@ module Slotify
 
     def with_strict_slots(strict_slot_names)
       @strict_slots = strict_slot_names.map(&:to_sym)
-      validate_slots!
     end
 
     def respond_to_missing?(name, include_private = false)
-      name.start_with?("with_")
+      name.start_with?("with_") || slot_defined?(name)
     end
 
     def method_missing(name, *args, **options, &block)
@@ -71,17 +80,17 @@ module Slotify
           collection = args.first
           add_values(slot_name, collection, options, block)
         end
+      elsif slot_defined?(name)
+        content_for(name)
+      else
+        super
       end
     end
 
     private
 
-    def slots_defined?
-      !@strict_slots.nil?
-    end
-
     def slot_defined?(slot_name)
-      slot_name && (@strict_slots.nil? || @strict_slots.include?(slot_name.to_sym))
+      slot_name && @strict_slots.include?(slot_name.to_sym)
     end
 
     def slot_values(slot_name)
@@ -105,10 +114,7 @@ module Slotify
     def validate_slots!
       return if @strict_slots.nil?
 
-      singular_slots = @strict_slots.map { singularize(_1) }
-      slots_called = @values.map(&:slot_name).uniq
-      undefined_slots = slots_called - singular_slots
-
+      undefined_slots = @values.map(&:slot_name).uniq - @strict_slots.map { singularize(_1) }
       if undefined_slots.any?
         raise UndefinedSlotError, "missing slot #{"definition".pluralize(undefined_slots.size)} for `#{undefined_slots.map { ":#{_1}(s)" }.join(", ")}`"
       end

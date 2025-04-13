@@ -1,7 +1,7 @@
 module Slotify
   module Extensions
     module Base
-      extend HelpersConcern
+      extend SlotableHelpers
 
       attr_accessor :partial
 
