@@ -1,14 +1,11 @@
 #!/usr/bin/env ruby
-$: << File.expand_path("../performance", __dir__)
 
-puts "\nBASELINE BENCHMARK ==========================\n\n"
-require_relative "../performance/baseline_benchmark"
-
-puts "NICE PARTIALS BENCHMARK ===================\n\n"
-require_relative "../performance/nice_partials_benchmark"
-
-puts "VIEW COMPONENT BENCHMARK ==================\n\n"
-require_relative "../performance/view_component_benchmark"
-
-puts "SLOTIFY BENCHMARK =========================\n\n"
-require_relative "../performance/slotify_benchmark"
+if ENV["BENCHMARK_TARGET"]
+  system("BENCHMARK_TARGET=#{ENV["BENCHMARK_TARGET"]} ruby performance/benchmark.rb")
+else
+  system("
+    BENCHMARK_TARGET=action_view ruby performance/benchmark.rb;
+    BENCHMARK_TARGET=nice_partials ruby performance/benchmark.rb;
+    BENCHMARK_TARGET=view_component ruby performance/benchmark.rb;
+    BENCHMARK_TARGET=slotify ruby performance/benchmark.rb")
+end
