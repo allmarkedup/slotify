@@ -2,13 +2,15 @@ module Slotify
   class Partial
     include InflectionHelper
 
+    RESERVED_SLOT_NAMES = [:content, :slot, :slots]
+
     attr_reader :outer_partial
 
     def initialize(view_context)
       @view_context = view_context
       @outer_partial = view_context.partial
       @values = []
-      @strict_slots = nil
+      @defined_slots = nil
     end
 
     def content_for(slot_name)
@@ -28,11 +30,7 @@ module Slotify
     end
 
     def yield(*args)
-      if args.empty?
-        @captured_buffer
-      else
-        content_for(args.first)
-      end
+      args.empty? ? @captured_buffer : content_for(args.first)
     end
 
     def content
@@ -50,7 +48,7 @@ module Slotify
     def slot_locals
       validate_slots!
 
-      pairs = @strict_slots.map do |slot_name|
+      pairs = @defined_slots.map do |slot_name|
         values = slot_values(slot_name)
         values = singular?(slot_name) ? values&.first : values
         [slot_name, values]
@@ -63,8 +61,14 @@ module Slotify
       end.to_h
     end
 
-    def with_strict_slots(strict_slot_names)
-      @strict_slots = strict_slot_names.map(&:to_sym)
+    def define_slots!(slot_names)
+      raise SlotsDefinedError, "Slots cannot be redefined" unless @defined_slots.nil?
+
+      @defined_slots = slot_names.map(&:to_sym).each do |slot_name|
+        if slot_name.in?(RESERVED_SLOT_NAMES)
+          raise ReservedSlotNameError, ":#{slot_name} is a reserved word and cannot be used as a slot name"
+        end
+      end
     end
 
     def respond_to_missing?(name, include_private = false)
@@ -90,7 +94,7 @@ module Slotify
     private
 
     def slot_defined?(slot_name)
-      slot_name && @strict_slots.include?(slot_name.to_sym)
+      slot_name && @defined_slots.include?(slot_name.to_sym)
     end
 
     def slot_values(slot_name)
@@ -112,14 +116,14 @@ module Slotify
     end
 
     def validate_slots!
-      return if @strict_slots.nil?
+      return if @defined_slots.nil?
 
-      undefined_slots = @values.map(&:slot_name).uniq - @strict_slots.map { singularize(_1) }
+      undefined_slots = @values.map(&:slot_name).uniq - @defined_slots.map { singularize(_1) }
       if undefined_slots.any?
         raise UndefinedSlotError, "missing slot #{"definition".pluralize(undefined_slots.size)} for `#{undefined_slots.map { ":#{_1}(s)" }.join(", ")}`"
       end
 
-      @strict_slots.filter { singular?(_1) }.each do |slot_name|
+      @defined_slots.filter { singular?(_1) }.each do |slot_name|
         values = slot_values(slot_name)
         raise MultipleSlotEntriesError, "slot :#{slot_name} called #{values.size} times (expected 1)" if values.many?
       end

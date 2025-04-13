@@ -2,7 +2,7 @@ module Slotify
   class UnknownSlotError < NameError
   end
 
-  class SlotsAccessError < RuntimeError
+  class SlotsDefinedError < RuntimeError
   end
 
   class UndefinedSlotError < StandardError
@@ -15,5 +15,8 @@ module Slotify
   end
 
   class StrictSlotsError < ArgumentError
+  end
+
+  class ReservedSlotNameError < ArgumentError
   end
 end

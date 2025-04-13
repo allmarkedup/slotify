@@ -2,11 +2,10 @@ module Slotify
   module Extensions
     module PartialRenderer
       def render_partial_template(view, locals, template, layout, block)
-        partial = view.partial = Slotify::Partial.new(view)
-
         return super unless template.strict_slots?
 
-        partial.with_strict_slots(template.strict_slots_keys)
+        partial = view.partial = Slotify::Partial.new(view)
+        partial.define_slots!(template.strict_slots_keys)
 
         view.capture_with_outer_partial_access(&block) if block
         locals = locals.merge(partial.slot_locals)
