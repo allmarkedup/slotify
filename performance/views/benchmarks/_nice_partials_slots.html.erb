@@ -1,0 +1,15 @@
+<%# locals: (title:) -%>
+
+<div>
+  <h1><%= title %></h1>
+  <div>
+    <%= partial.description.required %>
+  </div>
+  <ul>
+    <% if partial.items&.any? %>
+      <% partial.items.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    <% end %>
+  </ul>
+</div>

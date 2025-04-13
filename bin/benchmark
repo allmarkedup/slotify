@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+$: << File.expand_path("../performance", __dir__)
+
+puts "\nBASELINE BENCHMARK ==========================\n\n"
+require_relative "../performance/baseline_benchmark"
+
+puts "NICE PARTIALS BENCHMARK ===================\n\n"
+require_relative "../performance/nice_partials_benchmark"
+
+puts "VIEW COMPONENT BENCHMARK ==================\n\n"
+require_relative "../performance/view_component_benchmark"
+
+puts "SLOTIFY BENCHMARK =========================\n\n"
+require_relative "../performance/slotify_benchmark"

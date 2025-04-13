@@ -37,6 +37,7 @@ GEM
     ast (2.4.3)
     base64 (0.2.0)
     benchmark (0.4.0)
+    benchmark-ips (2.14.0)
     bigdecimal (3.1.9)
     builder (3.3.0)
     capybara (3.40.0)
@@ -63,6 +64,7 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     matrix (0.4.2)
+    method_source (1.1.0)
     mini_mime (1.1.5)
     minitest (5.25.5)
     minitest-reporters (1.7.1)
@@ -71,6 +73,8 @@ GEM
       minitest (>= 5.0)
       ruby-progressbar
     mutex_m (0.3.0)
+    nice_partials (0.10.1)
+      actionview (>= 4.2.6)
     nokogiri (1.18.7-aarch64-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.18.7-aarch64-linux-musl)
@@ -153,6 +157,10 @@ GEM
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
+    view_component (3.21.0)
+      activesupport (>= 5.2.0, < 8.1)
+      concurrent-ruby (~> 1.0)
+      method_source (~> 1.0)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.7.2)
@@ -169,12 +177,15 @@ PLATFORMS
 
 DEPENDENCIES
   appraisal
+  benchmark-ips
   capybara
   minitest
   minitest-reporters
+  nice_partials
   slotify!
   standard (>= 1.35.1)
   standard-rails
+  view_component
 
 BUNDLED WITH
    2.6.6

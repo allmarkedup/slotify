@@ -1,0 +1,15 @@
+<%# locals: (title:, description:, items: []) -%>
+
+<div>
+  <h1><%= title %></h1>
+  <div>
+    <%= description %>
+  </div>
+  <ul>
+    <% if items.any? %>
+      <% items.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    <% end %>
+  </ul>
+</div>
