@@ -5,6 +5,13 @@ module Slotify
 
       attr_accessor :partial
 
+      def render(options = {}, locals = {}, &block)
+        @partial = Slotify::Partial.new(self)
+        super
+      ensure
+        @partial = partial.outer_partial
+      end
+
       def capture_with_outer_partial_access(*args, &block)
         inner_partial, @partial = partial, partial.outer_partial
         inner_partial.capture(*args, &block)
