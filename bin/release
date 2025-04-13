@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+require "optparse"
+require_relative "../lib/slotify/version"
+
+puts "Starting release..."
+
+options = {}
+OptionParser.new do |opt|
+  opt.on('--version VERSION') { options[:version] = _1 }
+end.parse!
+
+raise ArgumentError, "No release version specified" unless options[:version]
+
+dirty = system("git diff --cached --exit-code")
+
+raise "Working directory is dirty. Cannot run release scripts." if dirty
+
+current_version = Slotify::VERSION
+new_version = options[:version]
+
+version_file_path = File.expand_path("#{File.dirname(__FILE__)}/../lib/slotify/version.rb")
+version_file = File.open(version_file_path)
+version_file_contents = version_file.read
+
+File.write(version_file_path, version_file_contents.gsub(current_version, new_version))
+
+raise "Version update failed" unless File.read(version_file_path).match?(Regexp.new(new_version))
+
+system(%(git commit -am "Release v#{new_version}"))
+system(%(git tag -a v#{new_version} -m "v#{new_version} release"))
+system(%(git push origin main --tags))
