@@ -1,6 +1,8 @@
+require_relative "lib/slotify/version"
+
 Gem::Specification.new do |gem|
   gem.name = "slotify"
-  gem.version = "0.0.1"
+  gem.version = Slotify::VERSION
   gem.summary = "Superpowered slots for your Rails partials."
   gem.authors = ["Mark Perkins"]
   gem.license = "MIT"
