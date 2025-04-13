@@ -6,9 +6,9 @@ module Slotify
 
     delegate :presence, :to_s, :to_str, to: :content
 
-    def initialize(view_context, slot_name, args = [], options = {}, block = nil, partial_path: nil)
+    def initialize(view_context, args = [], options = {}, block = nil, slot_name: nil, partial_path: nil)
       @view_context = view_context
-      @slot_name = slot_name.to_sym
+      @slot_name = slot_name&.to_sym
       @args = args
       @options = options.to_h
       @block = block
@@ -47,12 +47,12 @@ module Slotify
     alias_method :to_hash, :to_h
 
     def with_partial_path(partial_path)
-      Value.new(@view_context, @slot_name, @args, options, @block, partial_path:)
+      Value.new(@view_context, @args, options, @block, slot_name: @slot_name, partial_path:)
     end
 
     def with_default_options(default_options)
       options = TagOptionsMerger.call(default_options, @options)
-      Value.new(@view_context, @slot_name, @args, options, @block)
+      Value.new(@view_context, @args, options, @block, slot_name: @slot_name)
     end
 
     def respond_to_missing?(name, include_private = false)
@@ -62,6 +62,8 @@ module Slotify
     def method_missing(name, ...)
       if name.start_with?("to_")
         @args.first.public_send(name, ...)
+      else
+        super
       end
     end
 
