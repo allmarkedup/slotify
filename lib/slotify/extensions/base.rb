@@ -1,7 +1,7 @@
 module Slotify
   module Extensions
     module Base
-      extend SlotableHelpers
+      include SlotCompatability
 
       attr_accessor :partial
 
