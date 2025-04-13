@@ -65,7 +65,7 @@ For example, here our `article` partial is being rendered with content for the `
 But this example just scratches the surface of what Slotify slots can do. Have a look at the more full-featured example below or jump to [the usage information](#usage).
 
 <details>
-<summary><h3>More full-featured example</h3></summary>
+<summary><h4>More full-featured example</h4></summary>
 
 ```erb
 <!-- views/_example.html.erb -->
