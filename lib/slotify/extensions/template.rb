@@ -3,16 +3,17 @@ require "action_view/template/error"
 module Slotify
   module Extensions
     module Template
+      STRICT_SLOTS_NONE = Object.new
       STRICT_SLOTS_REGEX = /\#\s+slots:\s+\((.*)\)/
       STRICT_SLOTS_KEYS_REGEX = /(\w+):(?=(?:[^"\\]*(?:\\.|"(?:[^"\\]*\\.)*[^"\\]*"))*[^"]*$)/
 
       def initialize(...)
         super
-        @strict_slots = ActionView::Template::NONE
+        @strict_slots = STRICT_SLOTS_NONE
       end
 
       def strict_slots!
-        if @strict_slots == ActionView::Template::NONE
+        if @strict_slots == STRICT_SLOTS_NONE
           source.sub!(STRICT_SLOTS_REGEX, "")
           strict_slots = $1
           @strict_slots = if strict_slots.nil?
@@ -30,7 +31,7 @@ module Slotify
       end
 
       def strict_slots_keys
-        strict_slots!.scan(STRICT_SLOTS_KEYS_REGEX).map(&:first)
+        @strict_slots_keys ||= strict_slots!.scan(STRICT_SLOTS_KEYS_REGEX).map(&:first)
       end
 
       def strict_locals!
@@ -41,6 +42,7 @@ module Slotify
 
       def locals_code
         return super unless strict_slots?
+
         strict_slots_keys.each_with_object(+super) do |key, code|
           code << "partial.set_slot_default(:#{key}, binding.local_variable_get(:#{key})); #{key} = partial.public_send(:#{key});"
         end
