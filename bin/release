@@ -14,7 +14,7 @@ raise ArgumentError, "❌ No release version specified" unless options[:version]
 current_version = Slotify::VERSION
 new_version = options[:version]
 
-puts "\n🚀 Starting v#{new_version} release process...\n\n"
+puts "\n🏁 Starting v#{new_version} release process...\n\n"
 
 `git diff --exit-code`
 raise "❌ Working directory is dirty. Cannot run release scripts." unless $?.success?
@@ -29,17 +29,22 @@ raise "❌ Version update failed" unless File.read(version_file_path).match?(Reg
 
 `bundle install --quiet`
 if $?.success?
-  puts "✨ `bundle install` completed successfully\n\n"
+  puts "✅ `bundle install` run successfully\n"
 else
   raise "❌ `bundle install` failed."
 end
 
 if options[:dry_run]
-  puts "✅  Dry run complete (git commands not run)\n\n"
+  puts "✅ Dry run complete (git commands not run)\n"
 else
-  system(%(git commit -am "Release v#{new_version}"), exception: true)
-  system(%(git tag -a v#{new_version} -m "v#{new_version} release"), exception: true)
-  system(%(git push origin main --tags), exception: true)
+  system(%(git commit -am "Release v#{new_version}" >> /dev/null), exception: true)
+  puts "✅ File changes committed to git\n"
 
-  puts "✅ Release v#{new_version} complete."
+  system(%(git tag -a v#{new_version} -m "v#{new_version} release" >> /dev/null), exception: true)
+  puts "✅ v#{new_version} git tag created\n"
+
+  system(%(git push origin main --tags >> /dev/null), exception: true)
+  puts "✅ Changes pushed to Github\n"
+
+  puts "\n🚀 Release v#{new_version} complete."
 end
