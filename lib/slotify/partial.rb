@@ -9,11 +9,13 @@ module Slotify
 
     attr_reader :outer_partial
 
-    def initialize(view_context)
+    def initialize(view_context, slots = [])
       @view_context = view_context
       @outer_partial = view_context.partial
       @values = ValueStore.new(@view_context)
       @defined_slots = nil
+
+      define_slots!(slots)
     end
 
     def content_for(slot_name)
@@ -63,9 +65,15 @@ module Slotify
       end.to_h
     end
 
-    def define_slots!(slot_names)
-      raise SlotsDefinedError, "Slots cannot be redefined" unless @defined_slots.nil?
+    private
 
+    attr_reader :values
+
+    def slot?(slot_name)
+      slot_name && @defined_slots.include?(slot_name.to_sym)
+    end
+
+    def define_slots!(slot_names)
       @defined_slots = slot_names.map(&:to_sym).each do |slot_name|
         if RESERVED_SLOT_NAMES.include?(singularize(slot_name))
           raise ReservedSlotNameError,
@@ -78,14 +86,6 @@ module Slotify
           define_multi_value_slot_methods(slot_name)
         end
       end
-    end
-
-    private
-
-    attr_reader :values
-
-    def slot?(slot_name)
-      slot_name && @defined_slots.include?(slot_name.to_sym)
     end
 
     def define_single_value_slot_method(slot_name)
