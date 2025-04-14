@@ -3,18 +3,18 @@
 require "optparse"
 require_relative "../lib/slotify/version"
 
-puts "Starting release..."
+puts "\n🌈 Starting release...\n\n"
 
 options = {}
 OptionParser.new do |opt|
   opt.on('--version VERSION') { options[:version] = _1 }
+  opt.on('--dry-run') { options[:dry_run] = true }
 end.parse!
 
-raise ArgumentError, "No release version specified" unless options[:version]
+raise ArgumentError, "❌ No release version specified" unless options[:version]
 
-dirty = system("git diff --cached --exit-code")
-
-raise "Working directory is dirty. Cannot run release scripts." if dirty
+`git diff --exit-code`
+raise "❌ Working directory is dirty. Cannot run release scripts." if ($?.exitstatus == 1)
 
 current_version = Slotify::VERSION
 new_version = options[:version]
@@ -25,8 +25,14 @@ version_file_contents = version_file.read
 
 File.write(version_file_path, version_file_contents.gsub(current_version, new_version))
 
-raise "Version update failed" unless File.read(version_file_path).match?(Regexp.new(new_version))
+raise "❌ Version update failed" unless File.read(version_file_path).match?(Regexp.new(new_version))
 
-system(%(git commit -am "Release v#{new_version}"))
-system(%(git tag -a v#{new_version} -m "v#{new_version} release"))
-system(%(git push origin main --tags))
+if options[:dry_run]
+  puts "✅  Dry run complete (git commands not run)\n\n"
+else
+  system(%(git commit -am "Release v#{new_version}"), exception: true)
+  system(%(git tag -a v#{new_version} -m "v#{new_version} release"), exception: true)
+  system(%(git push origin main --tags), exception: true)
+
+  puts "✅ Release v#{new_version} complete."
+end
