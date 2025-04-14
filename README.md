@@ -484,78 +484,88 @@ And then run `bundle install`. You are good to go!
 * `Rails 7.1+`
 * `Ruby 3.1+`
 
-## Credits
+## Testing 
 
-Slotify was inspired by the excellent [nice_partials gem](https://github.com/bullet-train-co/nice_partials) as well as ViewComponent's [slots implementation](https://viewcomponent.org/guide/slots.html).
+The test suite can be run using the `bin/test` command.
 
-`nice_partials` provides very similar functionality to Slotify but takes a slightly different approach/style. So if you are not convinced by Slotify then definitely [check it out](https://github.com/bullet-train-co/nice_partials)!
+```bash
+bin/test
+```
 
-## Benchmarks
+### Benchmarks
 
-Slotify is still in the early stages of development and no attempt has yet been made to optimise rendering performance.
+Rendering performance benchmark tests for Slotify and a few alternatives ('vanilla' ActionView, `view_component` and `nice_partials`) can be found in the `/performance` directory.
 
-Below are some initial (crude) benchmarking comparisons with other similar gems.
+These benchmarks are a little crude right now!
 
 > [!TIP]
 > Benchmarks can be run using the `bin/benchmarks` command from the repository root.
+
+Results from a recent run are shown below:
 
 ```
 ✨🦄 ACTION_VIEW 🦄✨
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    11.774k i/100ms
-               slots    10.153k i/100ms
+            no slots    13.168k i/100ms
+               slots    11.199k i/100ms
 Calculating -------------------------------------
-            no slots    125.557k (± 2.5%) i/s    (7.96 μs/i) -      1.260M in  10.040938s
-               slots    106.413k (± 3.8%) i/s    (9.40 μs/i) -      1.066M in  10.034026s
+            no slots    129.496k (± 2.5%) i/s    (7.72 μs/i) -      1.304M in  10.074072s
+               slots    110.993k (± 3.2%) i/s    (9.01 μs/i) -      1.109M in  10.001327s
 
 Comparison:
-            no slots:   125556.9 i/s
-               slots:   106413.2 i/s - 1.18x  slower
+            no slots:   129495.8 i/s
+               slots:   110993.4 i/s - 1.17x  slower
 
 
 ✨🦄 NICE_PARTIALS 🦄✨
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    11.581k i/100ms
-               slots     4.070k i/100ms
+            no slots    11.494k i/100ms
+               slots     4.131k i/100ms
 Calculating -------------------------------------
-            no slots    118.314k (± 2.3%) i/s    (8.45 μs/i) -      1.193M in  10.087734s
-               slots     42.704k (± 2.4%) i/s   (23.42 μs/i) -    427.350k in  10.013680s
+            no slots    118.239k (± 2.5%) i/s    (8.46 μs/i) -      1.184M in  10.019663s
+               slots     42.889k (± 2.6%) i/s   (23.32 μs/i) -    429.624k in  10.025090s
 
 Comparison:
-            no slots:   118314.5 i/s
-               slots:    42704.4 i/s - 2.77x  slower
+            no slots:   118239.2 i/s
+               slots:    42889.3 i/s - 2.76x  slower
 
 
 ✨🦄 VIEW_COMPONENT 🦄✨
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    20.272k i/100ms
-               slots     7.259k i/100ms
+            no slots    20.333k i/100ms
+               slots     7.344k i/100ms
 Calculating -------------------------------------
-            no slots    201.976k (± 2.3%) i/s    (4.95 μs/i) -      2.027M in  10.042483s
-               slots     72.336k (± 4.2%) i/s   (13.82 μs/i) -    725.900k in  10.057500s
+            no slots    205.892k (± 1.7%) i/s    (4.86 μs/i) -      2.074M in  10.076433s
+               slots     74.168k (± 1.9%) i/s   (13.48 μs/i) -    741.744k in  10.004788s
 
 Comparison:
-            no slots:   201975.5 i/s
-               slots:    72336.1 i/s - 2.79x  slower
+            no slots:   205891.7 i/s
+               slots:    74168.1 i/s - 2.78x  slower
 
 
 ✨🦄 SLOTIFY 🦄✨
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots     9.610k i/100ms
-               slots     2.511k i/100ms
+            no slots    11.912k i/100ms
+               slots     2.770k i/100ms
 Calculating -------------------------------------
-            no slots     93.193k (± 6.2%) i/s   (10.73 μs/i) -    932.170k in  10.055697s
-               slots     24.921k (± 4.3%) i/s   (40.13 μs/i) -    251.100k in  10.097174s
+            no slots    117.182k (± 2.6%) i/s    (8.53 μs/i) -      1.179M in  10.071753s
+               slots     27.356k (± 2.0%) i/s   (36.56 μs/i) -    274.230k in  10.029011s
 
 Comparison:
-            no slots:    93193.0 i/s
-               slots:    24921.2 i/s - 3.74x  slower
+            no slots:   117182.4 i/s
+               slots:    27355.6 i/s - 4.28x  slower
 ```
+
+## Credits
+
+Slotify was inspired by the excellent [nice_partials gem](https://github.com/bullet-train-co/nice_partials) as well as ViewComponent's [slots implementation](https://viewcomponent.org/guide/slots.html).
+
+`nice_partials` provides very similar functionality to Slotify but takes a slightly different approach/style. So if you are not convinced by Slotify then definitely [check it out](https://github.com/bullet-train-co/nice_partials)!
