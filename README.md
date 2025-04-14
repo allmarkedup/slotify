@@ -257,6 +257,11 @@ These can then be accessed in the partial template via the `.options` method on 
 Slot options can be useful for providing tag attributes when rendering slot content or rendering variants
 of a slot based on an option value.
 
+```erb
+<%= tag.h1 **title.options %><%= title %><% end %>
+<!-- <h1 class="color-hotpink" data-controller="fancy-title">The title</h1> -->
+```
+
 When rendered as a string the options are passed through the Rails `tag.attributes` helper to generate an HTML tag attributes string:
 
 ```erb
@@ -345,11 +350,13 @@ The slot writer methods for multi-value slots use the **singluar form** of the s
 > _Docs coming soon..._ 
 
 ```erb
-<% partial.with_title "The title", class: "color-hotpink" %>
-<% partial.with_website_link "Example website", "https://example.com", data: {controller: "external-link"} %>
-
-<% partial.with_item "Item one" %>
-<% partial.with_item "Item two", class: "highlight" %>
+<%= render "example" do |partial| %>
+  <% partial.with_title "The title", class: "color-hotpink" %>
+  <% partial.with_website_link "Example website", "https://example.com", data: {controller: "external-link"} %>
+  
+  <% partial.with_item "Item one" %>
+  <% partial.with_item "Item two", class: "highlight" %>
+<% end %>
 ```
 
 ```erb
