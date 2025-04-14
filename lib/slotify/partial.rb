@@ -1,6 +1,6 @@
 module Slotify
   class Partial
-    include InflectionHelper
+    include SymbolInflectionHelper
 
     RESERVED_SLOT_NAMES = [
       :content, :slot, :value, :content_for,
@@ -50,8 +50,6 @@ module Slotify
     end
 
     def slot_locals
-      validate_slots!
-
       pairs = @defined_slots.map do |slot_name|
         slot_values = values.for(slot_name)
         slot_values = singular?(slot_name) ? slot_values&.first : slot_values
@@ -70,19 +68,14 @@ module Slotify
 
       @defined_slots = slot_names.map(&:to_sym).each do |slot_name|
         if RESERVED_SLOT_NAMES.include?(singularize(slot_name))
-          raise ReservedSlotNameError, ":#{slot_name} is a reserved word and cannot be used as a slot name"
+          raise ReservedSlotNameError,
+            ":#{slot_name} is a reserved word and cannot be used as a slot name"
         end
 
-        writer_method = :"with_#{slot_name}"
-        unless respond_to?(writer_method)
-          self.class.define_method(writer_method) { |*a, **o, &b| values.add(slot_name, a, o, b) }
-        end
-
-        if plural?(slot_name)
-          singular_writer_method = :"with_#{singularize(slot_name)}"
-          unless respond_to?(singular_writer_method)
-            self.class.define_method(singular_writer_method) { |*a, **o, &b| values.add(singularize(slot_name), a, o, b) }
-          end
+        if singular?(slot_name)
+          define_single_value_slot_method(slot_name)
+        else
+          define_multi_value_slot_methods(slot_name)
         end
       end
     end
@@ -95,18 +88,33 @@ module Slotify
       slot_name && @defined_slots.include?(slot_name.to_sym)
     end
 
-    def validate_slots!
-      return if @defined_slots.nil?
+    def define_single_value_slot_method(slot_name)
+      method_name = :"with_#{slot_name}"
 
-      undefined_slots = values.slot_names - @defined_slots.map { singularize(_1) }
-      if undefined_slots.any?
-        raise UndefinedSlotError,
-          "missing slot #{"definition".pluralize(undefined_slots.size)} for `#{undefined_slots.map { ":#{_1}(s)" }.join(", ")}`"
+      return if respond_to?(method_name)
+
+      self.class.define_method(method_name) do |*args, **options, &block|
+        if values.for(slot_name).any?
+          raise MultipleSlotEntriesError,
+            "slot :#{slot_name} is defined as a single-value slot but was called multiple times"
+        end
+
+        values.add(slot_name, args, options, block)
+      end
+    end
+
+    def define_multi_value_slot_methods(slot_name)
+      method_name = :"with_#{slot_name}"
+      singular_slot_name = singularize(slot_name)
+
+      return if respond_to?(method_name)
+
+      self.class.define_method(method_name) do |*args, **options, &block|
+        values.add(slot_name, args, options, block)
       end
 
-      @defined_slots.filter { singular?(_1) }.each do |slot_name|
-        slot_values = values.for(slot_name)
-        raise MultipleSlotEntriesError, "slot :#{slot_name} called #{slot_values.size} times (expected 1)" if slot_values.many?
+      self.class.define_method(:"with_#{singular_slot_name}") do |*args, **options, &block|
+        values.add(singular_slot_name, args, options, block)
       end
     end
   end

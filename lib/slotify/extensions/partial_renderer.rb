@@ -14,7 +14,7 @@ module Slotify
         end
       end
 
-      def decorate_strict_slots_errors(&block)
+      def decorate_strict_slots_errors
         yield
       rescue ActionView::Template::Error => error
         if missing_strict_locals_error?(error)

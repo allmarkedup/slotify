@@ -1,6 +1,6 @@
 module Slotify
   class Value
-    include InflectionHelper
+    include SymbolInflectionHelper
 
     attr_reader :slot_name, :args, :block
 
@@ -47,7 +47,7 @@ module Slotify
     alias_method :to_hash, :to_h
 
     def with_partial_path(partial_path)
-      Value.new(@view_context, @args, options, @block, slot_name: @slot_name, partial_path:)
+      Value.new(@view_context, @args, @options, @block, slot_name: @slot_name, partial_path:)
     end
 
     def with_default_options(default_options)
@@ -61,7 +61,7 @@ module Slotify
 
     def method_missing(name, ...)
       if name.start_with?("to_")
-        @args.first.public_send(name, ...)
+        content.public_send(name, ...)
       else
         super
       end
@@ -72,7 +72,7 @@ module Slotify
     end
 
     def render_in(view_context, &block)
-      view_context.render partial_path, **@options.to_h, &@block || block
+      view_context.render partial_path, **@options.to_h, &block || @block
     end
 
     private

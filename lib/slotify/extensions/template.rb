@@ -31,7 +31,7 @@ module Slotify
       end
 
       def strict_slots_keys
-        @strict_slots_keys ||= strict_slots!.scan(STRICT_SLOTS_KEYS_REGEX).map(&:first)
+        @strict_slots_keys ||= strict_slots!.scan(STRICT_SLOTS_KEYS_REGEX).map(&:first).freeze
       end
 
       def strict_locals!

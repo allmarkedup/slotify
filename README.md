@@ -504,58 +504,58 @@ Below are some initial (crude) benchmarking comparisons with other similar gems.
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    12.997k i/100ms
-               slots    10.891k i/100ms
+            no slots    11.774k i/100ms
+               slots    10.153k i/100ms
 Calculating -------------------------------------
-            no slots    125.622k (± 5.4%) i/s    (7.96 μs/i) -      1.261M in  10.072521s
-               slots    108.468k (± 3.3%) i/s    (9.22 μs/i) -      1.089M in  10.053026s
+            no slots    125.557k (± 2.5%) i/s    (7.96 μs/i) -      1.260M in  10.040938s
+               slots    106.413k (± 3.8%) i/s    (9.40 μs/i) -      1.066M in  10.034026s
 
 Comparison:
-            no slots:   125621.9 i/s
-               slots:   108467.5 i/s - 1.16x  slower
+            no slots:   125556.9 i/s
+               slots:   106413.2 i/s - 1.18x  slower
 
 
 ✨🦄 NICE_PARTIALS 🦄✨
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    11.822k i/100ms
-               slots     4.204k i/100ms
+            no slots    11.581k i/100ms
+               slots     4.070k i/100ms
 Calculating -------------------------------------
-            no slots    114.190k (± 4.7%) i/s    (8.76 μs/i) -      1.147M in  10.069870s
-               slots     41.138k (± 4.3%) i/s   (24.31 μs/i) -    411.992k in  10.039730s
+            no slots    118.314k (± 2.3%) i/s    (8.45 μs/i) -      1.193M in  10.087734s
+               slots     42.704k (± 2.4%) i/s   (23.42 μs/i) -    427.350k in  10.013680s
 
 Comparison:
-            no slots:   114190.2 i/s
-               slots:    41137.9 i/s - 2.78x  slower
+            no slots:   118314.5 i/s
+               slots:    42704.4 i/s - 2.77x  slower
 
 
 ✨🦄 VIEW_COMPONENT 🦄✨
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    20.329k i/100ms
-               slots     7.409k i/100ms
+            no slots    20.272k i/100ms
+               slots     7.259k i/100ms
 Calculating -------------------------------------
-            no slots    196.288k (± 4.7%) i/s    (5.09 μs/i) -      1.972M in  10.073103s
-               slots     71.311k (± 5.0%) i/s   (14.02 μs/i) -    718.673k in  10.108426s
+            no slots    201.976k (± 2.3%) i/s    (4.95 μs/i) -      2.027M in  10.042483s
+               slots     72.336k (± 4.2%) i/s   (13.82 μs/i) -    725.900k in  10.057500s
 
 Comparison:
-            no slots:   196287.6 i/s
-               slots:    71310.5 i/s - 2.75x  slower
+            no slots:   201975.5 i/s
+               slots:    72336.1 i/s - 2.79x  slower
 
 
 ✨🦄 SLOTIFY 🦄✨
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    10.883k i/100ms
-               slots    77.000 i/100ms
+            no slots     9.610k i/100ms
+               slots     2.511k i/100ms
 Calculating -------------------------------------
-            no slots    110.153k (± 4.8%) i/s    (9.08 μs/i) -      1.099M in  10.009002s
-               slots    789.118 (± 4.1%) i/s    (1.27 ms/i) -      7.931k in  10.071749s
+            no slots     93.193k (± 6.2%) i/s   (10.73 μs/i) -    932.170k in  10.055697s
+               slots     24.921k (± 4.3%) i/s   (40.13 μs/i) -    251.100k in  10.097174s
 
 Comparison:
-            no slots:   110152.8 i/s
-               slots:      789.1 i/s - 139.59x  slower
+            no slots:    93193.0 i/s
+               slots:    24921.2 i/s - 3.74x  slower
 ```

@@ -1,6 +1,6 @@
 module Slotify
   class ValueStore
-    include InflectionHelper
+    include SymbolInflectionHelper
 
     def initialize(view_context)
       @view_context = view_context
@@ -13,11 +13,9 @@ module Slotify
 
     def add(slot_name, args = [], options = {}, block = nil)
       if plural?(slot_name)
-        Array.wrap(args.first).map { add(singularize(slot_name), _1, options, block) }
+        Array.wrap(args.shift).map { add(singularize(slot_name), [_1, *args], options, block) }
       else
-        MethodArgsResolver.call(args, options, block) do
-          @values << Value.new(@view_context, _1, _2, _3, slot_name: singularize(slot_name))
-        end
+        @values << Value.new(@view_context, args, options, block, slot_name: singularize(slot_name))
       end
     end
 
