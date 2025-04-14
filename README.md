@@ -269,11 +269,11 @@ When rendered as a string the options are passed through the Rails `tag.attribut
 There are two types of slots.
 
 * **Single-value** slots can only be called **once** and return **a single value**.
-* **Multiple-value** slots can be called **many times** and return **an array of values**.
+* **Multi-value** slots can be called **many times** and return **an array of values**.
 
 #### Single-value slots
 
-Single-value slots are defined using a **singlular** slot name:
+Single-value slots are defined using a **singular** slot name:
 
 ```erb
 <%# slots: (item: nil) -%>
@@ -305,18 +305,18 @@ and their corresponding template variable represents a single value:
 > <% end %>
 > ```
 
-#### Multiple-value slots
+#### Multi-value slots
 
-Multiple-value slots are defined using a **plural** slot name:
+Multi-value slots are defined using a **plural** slot name:
 
 ```erb
 <%# slots: (items: nil) -%>
 ```
 
-Multiple-value slots can be called as many times as needed
+Multi-value slots can be called as many times as needed
 and their corresponding template variable represents an array of values.
 
-The slot writer methods for multiple-value slots use the **singluar form** of the slot name (e.g. `#with_item` for the `items` slot).
+The slot writer methods for multi-value slots use the **singluar form** of the slot name (e.g. `#with_item` for the `items` slot).
 
 ```erb
 <%= render "example" do |partial| %>
@@ -448,7 +448,7 @@ However there are a number of key differences:
 Nice partials slots are implicitly defined when rendering the partial.
 * Slotify slot values are available as local variables;
 with Nice partials slot values are accessed via methods on the `partial` variable.
-* Slotify has the concept (and enforces the use) of single-value vs. multiple-value slots.
+* Slotify has the concept (and enforces the use) of single- vs. multi-value slots.
 * Slotify slot content and options are transparently expanded and merged into defaults when using with helpers like `content_tag` and `link_to`.
 * Slotify slot values are `renderable` objects
 
@@ -458,7 +458,7 @@ separation of 'nice partial' functionality from ActionView-provided locals etc.
 #### `view_component`
 
 Both [ViewComponent](https://viewcomponent.org/) and Slotify provide a 'slots' API for content blocks.
-Slotify's slot writer syntax (i.e. `.with_<slot_name>` methods) and the concept of single-value (`renders_one`) vs multiple-value (`renders_many`) slots
+Slotify's slot writer syntax (i.e. `.with_<slot_name>` methods) and the concept of single-value (`renders_one`) vs multi-value (`renders_many`) slots
 are both modelled on ViewComponent's slots implementation.
 
 However apart from that they are quite different. Slotify adds functionality to regular ActionView partials whereas ViewComponent provides a complete standalone component system.
