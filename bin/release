@@ -19,14 +19,6 @@ puts "\n🚀 Starting v#{new_version} release process...\n\n"
 `git diff --exit-code`
 raise "❌ Working directory is dirty. Cannot run release scripts." unless $?.success?
 
-`bundle install --quiet`
-if $?.success?
-  puts "✨ `bundle install` completed successfully\n\n"
-
-else
-  raise "❌ `bundle install` failed."
-end
-
 version_file_path = File.expand_path("#{File.dirname(__FILE__)}/../lib/slotify/version.rb")
 version_file = File.open(version_file_path)
 version_file_contents = version_file.read
@@ -34,6 +26,13 @@ version_file_contents = version_file.read
 File.write(version_file_path, version_file_contents.gsub(current_version, new_version))
 
 raise "❌ Version update failed" unless File.read(version_file_path).match?(Regexp.new(new_version))
+
+`bundle install --quiet`
+if $?.success?
+  puts "✨ `bundle install` completed successfully\n\n"
+else
+  raise "❌ `bundle install` failed."
+end
 
 if options[:dry_run]
   puts "✅  Dry run complete (git commands not run)\n\n"
