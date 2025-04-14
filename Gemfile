@@ -2,6 +2,7 @@ source "https://rubygems.org"
 gemspec
 
 group :development, :test do
+  gem "rails", ">= 7.1"
   gem "appraisal"
   gem "benchmark-ips"
   gem "capybara"
