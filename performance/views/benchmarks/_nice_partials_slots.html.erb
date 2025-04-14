@@ -5,11 +5,11 @@
   <div>
     <%= partial.description.required %>
   </div>
-  <ul>
-    <% if partial.items&.any? %>
+  <% if partial.items&.any? %>
+    <ul>
       <% partial.items.each do |item| %>
         <li><%= item %></li>
       <% end %>
-    <% end %>
-  </ul>
+    </ul>
+  <% end %>
 </div>

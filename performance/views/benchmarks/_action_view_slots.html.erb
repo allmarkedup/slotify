@@ -5,9 +5,11 @@
   <div>
     <%= description %>
   </div>
-  <ul>
-    <% items.each do |item| %>
-      <li><%= item %></li>
-    <% end %>
-  </ul>
+  <% if items.any? %>
+    <ul>
+      <% items.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  <% end %>
 </div>

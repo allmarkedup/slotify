@@ -1,16 +1,16 @@
 <%# locals: (title:) -%>
-<%# slots: (description:, items: nil) -%>
+<%# slots: (description: nil, items: nil) -%>
 
 <div>
   <h1><%= title %></h1>
   <div>
     <%= description %>
   </div>
-  <ul>
-    <% if items.any? %>
-      <% items.each do |item| %>
-        <li><%= item %></li>
-      <% end %>
-    <% end %>
-  </ul>
+  <% if items.any? %>
+    <ul>
+        <% items.each do |item| %>
+          <li><%= item %></li>
+        <% end %>
+    </ul>
+  <% end %>
 </div>

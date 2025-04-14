@@ -5,7 +5,7 @@ require "action_controller/railtie"
 
 ENV["RAILS_ENV"] = "production"
 
-target = ActiveSupport::StringInquirer.new(ENV.fetch("BENCHMARK_TARGET", "action_view"))
+target = ActiveSupport::StringInquirer.new(ENV.fetch("BENCHMARK_TARGET", "slotify"))
 
 class BenchmarkApp < Rails::Application
   config.root = __dir__
@@ -14,14 +14,6 @@ class BenchmarkApp < Rails::Application
 end
 
 class BenchmarksController < ActionController::Base; end
-
-module BenchmarkHelpers
-  class << self
-    def random_array(length = 10)
-      Array.new(length) { rand(1...9) }
-    end
-  end
-end
 
 BenchmarksController.view_paths = [File.expand_path("./views", __dir__)]
 
@@ -36,8 +28,6 @@ elsif target.view_component?
   end
 elsif target.slotify?
   require_relative "../lib/slotify"
-elsif target.action_view?
-  # vanilla ActionView
 end
 
 controller_view = BenchmarksController.new.view_context
@@ -45,8 +35,8 @@ controller_view = BenchmarksController.new.view_context
 puts "\n✨🦄 #{target.upcase} 🦄✨\n\n"
 
 title = "The title"
-items = BenchmarkHelpers.random_array
 description = "The description"
+items = Array.new(10) { rand(1...9) }
 
 Benchmark.ips do |x|
   x.time = 10
@@ -82,7 +72,7 @@ Benchmark.ips do |x|
         partial.with_description do
           description
         end
-        partial.with_items items
+        items.each { partial.with_item _1 }
       end
     elsif target.action_view?
       description = controller_view.capture { description }
