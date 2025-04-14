@@ -72,20 +72,18 @@ module Slotify
         if RESERVED_SLOT_NAMES.include?(singularize(slot_name))
           raise ReservedSlotNameError, ":#{slot_name} is a reserved word and cannot be used as a slot name"
         end
-      end
-    end
 
-    def respond_to_missing?(name, include_private = false)
-      name.start_with?("with_") || slot?(name)
-    end
+        writer_method = :"with_#{slot_name}"
+        unless respond_to?(writer_method)
+          self.class.define_method(writer_method) { |*a, **o, &b| values.add(slot_name, a, o, b) }
+        end
 
-    def method_missing(name, *args, **options, &block)
-      if name.start_with?("with_")
-        values.add(name.to_s.delete_prefix("with_"), args, options, block)
-      elsif slot?(name)
-        content_for(name)
-      else
-        super
+        if plural?(slot_name)
+          singular_writer_method = :"with_#{singularize(slot_name)}"
+          unless respond_to?(singular_writer_method)
+            self.class.define_method(singular_writer_method) { |*a, **o, &b| values.add(singularize(slot_name), a, o, b) }
+          end
+        end
       end
     end
 
