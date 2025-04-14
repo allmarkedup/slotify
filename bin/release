@@ -3,8 +3,6 @@
 require "optparse"
 require_relative "../lib/slotify/version"
 
-puts "\n🌈 Starting release...\n\n"
-
 options = {}
 OptionParser.new do |opt|
   opt.on('--version VERSION') { options[:version] = _1 }
@@ -13,11 +11,21 @@ end.parse!
 
 raise ArgumentError, "❌ No release version specified" unless options[:version]
 
-`git diff --exit-code`
-raise "❌ Working directory is dirty. Cannot run release scripts." if ($?.exitstatus == 1)
-
 current_version = Slotify::VERSION
 new_version = options[:version]
+
+puts "\n🚀 Starting v#{new_version} release process...\n\n"
+
+`git diff --exit-code`
+raise "❌ Working directory is dirty. Cannot run release scripts." unless $?.success?
+
+`bundle install --quiet`
+if $?.success?
+  puts "✨ `bundle install` completed successfully\n\n"
+
+else
+  raise "❌ `bundle install` failed."
+end
 
 version_file_path = File.expand_path("#{File.dirname(__FILE__)}/../lib/slotify/version.rb")
 version_file = File.open(version_file_path)
