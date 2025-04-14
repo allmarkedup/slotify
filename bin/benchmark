@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 
-if ENV["BENCHMARK_TARGET"]
-  system("BENCHMARK_TARGET=#{ENV["BENCHMARK_TARGET"]} ruby performance/benchmark.rb")
+command = "bundle exec ruby performance/benchmark.rb"
+targets = %i[action_view nice_partials view_component slotify]
+target = ARGV.first
+
+if target
+  system("BENCHMARK_TARGET=#{target} #{command}")
 else
-  system("
-    BENCHMARK_TARGET=action_view ruby performance/benchmark.rb;
-    BENCHMARK_TARGET=nice_partials ruby performance/benchmark.rb;
-    BENCHMARK_TARGET=view_component ruby performance/benchmark.rb;
-    BENCHMARK_TARGET=slotify ruby performance/benchmark.rb")
+  system(targets.map { "BENCHMARK_TARGET=#{_1} #{command}" }.join(";\n"))
 end

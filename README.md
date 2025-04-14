@@ -371,8 +371,6 @@ The slot writer methods for multi-value slots use the **singluar form** of the s
 **Singlular slot value variables** in partial templates are actually instances of `Slotity::Value`.
 These value objects are automatically stringified so in most cases you will not even be aware of this and they can just be treated as regular string variables.
 
-
-
 ```erb
 <%= render "example" do |partial| %>
   <% partial.with_title class: "color-hotpink" do %>
@@ -486,83 +484,94 @@ And then run `bundle install`. You are good to go!
 
 ## Testing 
 
-The test suite can be run using the `bin/test` command.
+Slotify uses MiniTest for its test suite.
 
-```bash
+[Appraisal](https://github.com/thoughtbot/appraisal) is used in CI to test against a matrix of Ruby/Rails versions.
+
+#### Run tests
+
+```shell
 bin/test
 ```
 
 ### Benchmarks
 
-Rendering performance benchmark tests for Slotify and a few alternatives ('vanilla' ActionView, `view_component` and `nice_partials`) can be found in the `/performance` directory.
+Rendering performance benchmark tests for Slotify and a few alternatives (`action_view`, `view_component` & `nice_partials`) can be found in the `/performance` directory.
 
 These benchmarks are a little crude right now!
 
-> [!TIP]
-> Benchmarks can be run using the `bin/benchmarks` command from the repository root.
+**Run benchmarks:**
 
-Results from a recent run are shown below:
+```shell
+bin/benchmarks # run all benchmarks
+bin/benchmarks slotify # run Slotify benchmarks only
+```
+
+<details>
+<summary>Recent benchmark results</summary>
 
 ```
-✨🦄 ACTION_VIEW 🦄✨
+🏁🏁 ACTION_VIEW 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    13.168k i/100ms
-               slots    11.199k i/100ms
+            no slots    13.120k i/100ms
+               slots    11.038k i/100ms
 Calculating -------------------------------------
-            no slots    129.496k (± 2.5%) i/s    (7.72 μs/i) -      1.304M in  10.074072s
-               slots    110.993k (± 3.2%) i/s    (9.01 μs/i) -      1.109M in  10.001327s
+            no slots    127.047k (± 5.2%) i/s    (7.87 μs/i) -      1.273M in  10.051203s
+               slots    106.400k (± 5.0%) i/s    (9.40 μs/i) -      1.071M in  10.095061s
 
 Comparison:
-            no slots:   129495.8 i/s
-               slots:   110993.4 i/s - 1.17x  slower
+            no slots:   127047.3 i/s
+               slots:   106400.3 i/s - 1.19x  slower
 
 
-✨🦄 NICE_PARTIALS 🦄✨
+🏁🏁 NICE_PARTIALS 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    11.494k i/100ms
-               slots     4.131k i/100ms
+            no slots    11.451k i/100ms
+               slots     3.889k i/100ms
 Calculating -------------------------------------
-            no slots    118.239k (± 2.5%) i/s    (8.46 μs/i) -      1.184M in  10.019663s
-               slots     42.889k (± 2.6%) i/s   (23.32 μs/i) -    429.624k in  10.025090s
+            no slots    117.258k (± 3.3%) i/s    (8.53 μs/i) -      1.179M in  10.070693s
+               slots     40.737k (± 4.5%) i/s   (24.55 μs/i) -    408.345k in  10.051584s
 
 Comparison:
-            no slots:   118239.2 i/s
-               slots:    42889.3 i/s - 2.76x  slower
+            no slots:   117257.7 i/s
+               slots:    40736.8 i/s - 2.88x  slower
 
 
-✨🦄 VIEW_COMPONENT 🦄✨
+🏁🏁 VIEW_COMPONENT 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    20.333k i/100ms
-               slots     7.344k i/100ms
+            no slots    20.270k i/100ms
+               slots     7.445k i/100ms
 Calculating -------------------------------------
-            no slots    205.892k (± 1.7%) i/s    (4.86 μs/i) -      2.074M in  10.076433s
-               slots     74.168k (± 1.9%) i/s   (13.48 μs/i) -    741.744k in  10.004788s
+            no slots    211.571k (± 2.6%) i/s    (4.73 μs/i) -      2.128M in  10.067334s
+               slots     72.508k (± 5.2%) i/s   (13.79 μs/i) -    729.610k in  10.096809s
 
 Comparison:
-            no slots:   205891.7 i/s
-               slots:    74168.1 i/s - 2.78x  slower
+            no slots:   211570.7 i/s
+               slots:    72508.0 i/s - 2.92x  slower
 
 
-✨🦄 SLOTIFY 🦄✨
+🏁🏁 SLOTIFY 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    11.912k i/100ms
-               slots     2.770k i/100ms
+            no slots    12.051k i/100ms
+               slots     2.710k i/100ms
 Calculating -------------------------------------
-            no slots    117.182k (± 2.6%) i/s    (8.53 μs/i) -      1.179M in  10.071753s
-               slots     27.356k (± 2.0%) i/s   (36.56 μs/i) -    274.230k in  10.029011s
+            no slots    116.156k (± 5.4%) i/s    (8.61 μs/i) -      1.169M in  10.102387s
+               slots     26.454k (± 5.4%) i/s   (37.80 μs/i) -    265.580k in  10.077285s
 
 Comparison:
-            no slots:   117182.4 i/s
-               slots:    27355.6 i/s - 4.28x  slower
+            no slots:   116155.7 i/s
+               slots:    26454.0 i/s - 4.39x  slower
 ```
+
+</details>
 
 ## Credits
 

@@ -11,6 +11,7 @@ class BenchmarkApp < Rails::Application
   config.root = __dir__
   config.hosts << "slotify.build"
   credentials.secret_key_base = "slotify_secret_key"
+  config.cache_classes = true
 end
 
 class BenchmarksController < ActionController::Base; end
@@ -32,7 +33,7 @@ end
 
 controller_view = BenchmarksController.new.view_context
 
-puts "\n✨🦄 #{target.upcase} 🦄✨\n\n"
+puts "\n🏁🏁 #{target.upcase} 🏁🏁\n\n"
 
 title = "The title"
 description = "The description"
