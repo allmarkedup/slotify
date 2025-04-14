@@ -1,11 +1,27 @@
 #!/usr/bin/env ruby
 
-command = "bundle exec ruby performance/benchmark.rb"
-targets = %i[action_view nice_partials view_component slotify]
-target = ARGV.first
+require "optparse"
 
-if target
-  system("BENCHMARK_TARGET=#{target} #{command}")
+options = {
+  slots: true
+}
+OptionParser.new do |opt|
+  opt.on('--no-slots') { options[:slots] = false }
+end.parse!
+
+command = "bundle exec ruby performance/benchmark.rb"
+subjects = %i[nice_partials view_component slotify]
+subject = ARGV.first
+slots = options[:slots]
+
+system(%(mkdir -p tmp; rm -f ./tmp/benchmark_results))
+
+if subject
+  puts "\n🏁🏁 #{subject.upcase} 🏁🏁\n\n"
+  system(%(SLOTS=#{slots.inspect} #{command}; echo ""; SUBJECT=#{subject} SLOTS=#{slots.inspect} #{command}\n))
 else
-  system(targets.map { "BENCHMARK_TARGET=#{_1} #{command}" }.join(";\n"))
+  subjects.map do |subject|
+    puts "\n🏁🏁 #{subject.upcase} 🏁🏁\n\n"
+    system(%(SLOTS=#{slots.inspect} #{command}; echo ""; SUBJECT=#{subject} SLOTS=#{slots.inspect} #{command}))
+  end
 end

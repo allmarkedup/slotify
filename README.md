@@ -505,70 +505,136 @@ These benchmarks are a little crude right now!
 ```shell
 bin/benchmarks # run all benchmarks
 bin/benchmarks slotify # run Slotify benchmarks only
+bin/benchmarks --no-slots # run benchmarks for rendering without slots
 ```
 
 <details>
 <summary>Recent benchmark results</summary>
 
+#### Slots benchmark
+
 ```
-🏁🏁 ACTION_VIEW 🏁🏁
-
-ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
-Warming up --------------------------------------
-            no slots    13.120k i/100ms
-               slots    11.038k i/100ms
-Calculating -------------------------------------
-            no slots    127.047k (± 5.2%) i/s    (7.87 μs/i) -      1.273M in  10.051203s
-               slots    106.400k (± 5.0%) i/s    (9.40 μs/i) -      1.071M in  10.095061s
-
-Comparison:
-            no slots:   127047.3 i/s
-               slots:   106400.3 i/s - 1.19x  slower
-
-
 🏁🏁 NICE_PARTIALS 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    11.451k i/100ms
-               slots     3.889k i/100ms
+            baseline    11.951k i/100ms
 Calculating -------------------------------------
-            no slots    117.258k (± 3.3%) i/s    (8.53 μs/i) -      1.179M in  10.070693s
-               slots     40.737k (± 4.5%) i/s   (24.55 μs/i) -    408.345k in  10.051584s
+            baseline    119.604k (± 4.0%) i/s    (8.36 μs/i) -    597.550k in   5.005305s
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+               slots     3.745k i/100ms
+Calculating -------------------------------------
+               slots     38.156k (± 3.3%) i/s   (26.21 μs/i) -    194.740k in   5.110455s
 
 Comparison:
-            no slots:   117257.7 i/s
-               slots:    40736.8 i/s - 2.88x  slower
+            baseline:   119603.6 i/s
+               slots:    38156.2 i/s - 3.13x  slower
 
 
 🏁🏁 VIEW_COMPONENT 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    20.270k i/100ms
-               slots     7.445k i/100ms
+            baseline    12.155k i/100ms
 Calculating -------------------------------------
-            no slots    211.571k (± 2.6%) i/s    (4.73 μs/i) -      2.128M in  10.067334s
-               slots     72.508k (± 5.2%) i/s   (13.79 μs/i) -    729.610k in  10.096809s
+            baseline    120.458k (± 1.9%) i/s    (8.30 μs/i) -    607.750k in   5.047144s
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+               slots     7.636k i/100ms
+Calculating -------------------------------------
+               slots     76.412k (± 3.2%) i/s   (13.09 μs/i) -    381.800k in   5.002530s
 
 Comparison:
-            no slots:   211570.7 i/s
-               slots:    72508.0 i/s - 2.92x  slower
+            baseline:   120458.2 i/s
+               slots:    76412.0 i/s - 1.58x  slower
 
 
 🏁🏁 SLOTIFY 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    12.051k i/100ms
-               slots     2.710k i/100ms
+            baseline    11.988k i/100ms
 Calculating -------------------------------------
-            no slots    116.156k (± 5.4%) i/s    (8.61 μs/i) -      1.169M in  10.102387s
-               slots     26.454k (± 5.4%) i/s   (37.80 μs/i) -    265.580k in  10.077285s
+            baseline    119.934k (± 3.0%) i/s    (8.34 μs/i) -    599.400k in   5.002971s
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+               slots     2.656k i/100ms
+Calculating -------------------------------------
+               slots     26.854k (± 1.2%) i/s   (37.24 μs/i) -    135.456k in   5.044894s
 
 Comparison:
-            no slots:   116155.7 i/s
-               slots:    26454.0 i/s - 4.39x  slower
+            baseline:   119933.6 i/s
+               slots:    26853.9 i/s - 4.47x  slower
+```
+
+#### No slots benchmark
+
+```
+🏁🏁 NICE_PARTIALS 🏁🏁
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            baseline    13.033k i/100ms
+Calculating -------------------------------------
+            baseline    131.323k (± 1.0%) i/s    (7.61 μs/i) -    664.683k in   5.061999s
+
+Pausing here -- run Ruby again to measure the next benchmark...
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            no slots     4.659k i/100ms
+Calculating -------------------------------------
+            no slots     46.284k (± 2.8%) i/s   (21.61 μs/i) -    232.950k in   5.037627s
+
+Comparison:
+            baseline:   131322.8 i/s
+            no slots:    46283.7 i/s - 2.84x  slower
+
+
+🏁🏁 VIEW_COMPONENT 🏁🏁
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            baseline    12.845k i/100ms
+Calculating -------------------------------------
+            baseline    134.644k (± 1.6%) i/s    (7.43 μs/i) -    680.785k in   5.057489s
+
+Pausing here -- run Ruby again to measure the next benchmark...
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            no slots    20.785k i/100ms
+Calculating -------------------------------------
+            no slots    206.431k (± 3.7%) i/s    (4.84 μs/i) -      1.039M in   5.042744s
+
+Comparison:
+            no slots:   206431.4 i/s
+            baseline:   134643.7 i/s - 1.53x  slower
+
+
+🏁🏁 SLOTIFY 🏁🏁
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            baseline    13.247k i/100ms
+Calculating -------------------------------------
+            baseline    132.155k (± 2.9%) i/s    (7.57 μs/i) -    662.350k in   5.016827s
+
+Pausing here -- run Ruby again to measure the next benchmark...
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            no slots    11.537k i/100ms
+Calculating -------------------------------------
+            no slots    115.974k (± 1.8%) i/s    (8.62 μs/i) -    588.387k in   5.075197s
+
+Comparison:
+            baseline:   132154.8 i/s
+            no slots:   115974.0 i/s - 1.14x  slower
 ```
 
 </details>
