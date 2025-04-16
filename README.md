@@ -600,7 +600,7 @@ Slotify uses MiniTest for its test suite.
 #### Run tests
 
 ```shell
-bin/test
+bundle exec bin/test
 ```
 
 ### Benchmarks
@@ -626,9 +626,9 @@ The benchmark tests are a work in progress right now so any suggestions for impr
 You can run the benchmark tests locally using the `bin/benchmark` command from the root of the repository.
 
 ```shell
-bin/benchmarks # run all benchmarks
-bin/benchmarks slotify # run specified benchmarks only (slotify / view_component / nice_partials)
-bin/benchmarks --no-slots # run 'no-slots' benchmarks
+bundle exec bin/benchmarks # run all benchmarks
+bundle exec bin/benchmarks slotify # run specified benchmarks only (slotify / view_component / nice_partials)
+bundle exec bin/benchmarks --no-slots # run 'no-slots' benchmarks
 ```
 
 <details>
