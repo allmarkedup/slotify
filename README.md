@@ -11,9 +11,9 @@ Slots are a convenient way to pass blocks of content in to a partial without hav
 
 Slotified partials are a great way to build components in a Rails app without the additional overhead and learning curve of libraries like [ViewComponent](https://viewcomponent.org/) or [Phlex](https://www.phlex.fun/).
 
-> [!CAUTION]
-> Slotify is still in a early stage of development.
-The documentation is still quite sparse and the API could change at any point prior to a `v1.0` release.
+> [!WARNING]
+> Slotify is in an early stage of development and has not been properly battle-tested yet.
+The documentation is still a work-in-progress and the API may change between point releases until it reaches `v1.0`.
 
 ### 
 
