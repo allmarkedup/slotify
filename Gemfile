@@ -6,11 +6,12 @@ group :development, :test do
   gem "appraisal"
   gem "benchmark-ips"
   gem "capybara"
+  gem "gem-release"
   gem "minitest"
   gem "minitest-reporters"
   gem "nice_partials"
+  gem "rake"
   gem "standard", ">= 1.35.1"
   gem "standard-rails"
   gem "view_component", "3.21.0"
-  gem "gem-release"
 end

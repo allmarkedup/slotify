@@ -151,11 +151,11 @@ GEM
     nice_partials (0.10.1)
       actionview (>= 4.2.6)
     nio4r (2.7.4)
-    nokogiri (1.18.7-aarch64-linux-gnu)
+    nokogiri (1.18.7-aarch64-linux)
       racc (~> 1.4)
     nokogiri (1.18.7-aarch64-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.18.7-arm-linux-gnu)
+    nokogiri (1.18.7-arm-linux)
       racc (~> 1.4)
     nokogiri (1.18.7-arm-linux-musl)
       racc (~> 1.4)
@@ -163,7 +163,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.7-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.18.7-x86_64-linux-gnu)
+    nokogiri (1.18.7-x86_64-linux)
       racc (~> 1.4)
     nokogiri (1.18.7-x86_64-linux-musl)
       racc (~> 1.4)
@@ -284,16 +284,16 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.7.2)
+    zeitwerk (2.6.18)
 
 PLATFORMS
-  aarch64-linux-gnu
+  aarch64-linux
   aarch64-linux-musl
-  arm-linux-gnu
+  arm-linux
   arm-linux-musl
   arm64-darwin
   x86_64-darwin
-  x86_64-linux-gnu
+  x86_64-linux
   x86_64-linux-musl
 
 DEPENDENCIES
@@ -305,6 +305,7 @@ DEPENDENCIES
   minitest-reporters
   nice_partials
   rails (~> 7.1)
+  rake
   slotify!
   standard (>= 1.35.1)
   standard-rails
