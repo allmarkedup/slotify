@@ -1,4 +1,7 @@
 module Slotify
+  class Error < StandardError
+  end
+
   class UnknownSlotError < NameError
   end
 
