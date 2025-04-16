@@ -12,7 +12,7 @@ class BenchmarkApp < Rails::Application
   config.cache_classes = true
 end
 
-class BenchmarksController < ActionController::Base; end
+class BenchmarksController < ActionController::Base; end  # rubocop:disable Rails/ApplicationController
 
 BenchmarksController.view_paths = [File.expand_path("./views", __dir__)]
 
@@ -72,8 +72,6 @@ Benchmark.ips do |x|
         end
       end
     end
-
-    x.hold! "tmp/benchmark_results"
   else
     x.report("baseline") do
       controller_view.render("action_view_no_slots", title:, description:, items:)
@@ -88,9 +86,8 @@ Benchmark.ips do |x|
         controller_view.render("slotify_no_slots", title:, description:, items:)
       end
     end
-
-    x.hold! "tmp/benchmark_results"
   end
 
+  x.hold! "tmp/benchmark_results"
   x.compare!
 end

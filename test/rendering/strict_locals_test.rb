@@ -5,7 +5,7 @@ class StrictLocalsTest < Slotify::TestCase
     let(:partial_path) { "with_strict_locals" }
 
     it "makes local values available in the template" do
-      locals = { title: "Title from locals", subtitle: "Subtitle from locals" }
+      locals = {title: "Title from locals", subtitle: "Subtitle from locals"}
       render partial_path, **locals do |partial|
         partial.with_description "This is the description"
       end
@@ -15,7 +15,7 @@ class StrictLocalsTest < Slotify::TestCase
     end
 
     it "sets default values" do
-      locals = { title: "Title from locals" }
+      locals = {title: "Title from locals"}
       render partial_path, **locals do |partial|
         partial.with_description "This is the description"
       end
