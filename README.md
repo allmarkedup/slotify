@@ -605,147 +605,155 @@ bin/test
 
 Some crude render performance benchmark tests for `slotify`, `view_component` and `nice_partials` can be found in the `/performance` directory.
 
-All benchmarks use a 'vanilla' ActionView template rendering performance measurement as the baseline for comparison against.
+All benchmarks use a vanilla ActionView template rendering performance measurement as the baseline for comparison against.
 
-The benchmark tests are a little crude right now so any suggestions for improvements would be much appreciated!
+* The **slots** benchmarks compare the performance of rendering a partial/component that uses slots against the baseline.
+* The **no slots** benchmarks compare the performance of rendering a partial/component without slots (i.e. values provided as keyword arguments) against the baseline. These results are useful for determining how much the gem being benchmarked affects rendering performance even when slots are not used.
 
-**Running benchmarks:**
+The benchmark tests are a work in progress right now so any suggestions for improvements would be much appreciated!
+
+#### Benchmark results summary
+
+* `slotify`, `nice_partials` and `view_component` all result in slighly slower partial/component rendering speeds compared to the 'vanilla ActionView' baseline (as expected).
+* `slotify` is currently the closest to the baseline when rendering partials/components without any slots (~1.2x slower).
+* `slotify` is currently the furthest from the baseline when rendering partials/components using slots (~3x slower).
+
+
+#### Running benchmarks
 
 You can run the benchmark tests locally using the `bin/benchmark` command from the root of the repository.
 
 ```shell
 bin/benchmarks # run all benchmarks
 bin/benchmarks slotify # run specified benchmarks only (slotify / view_component / nice_partials)
-bin/benchmarks --no-slots # run benchmarks for rendering without slots
+bin/benchmarks --no-slots # run 'no-slots' benchmarks
 ```
 
 <details>
-<summary>Recent benchmark results</summary>
+<summary><h4>Recent benchmark results</h4></summary>
 
-#### Slots benchmark
+#### With slots:
 
 ```
+➜ bin/benchmark
+
+🏁🏁 SLOTIFY 🏁🏁
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+            baseline    11.836k i/100ms
+Calculating -------------------------------------
+            baseline    118.334k (± 2.8%) i/s    (8.45 μs/i) -    591.800k in   5.005403s
+
+ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
+Warming up --------------------------------------
+               slots     2.229k i/100ms
+Calculating -------------------------------------
+               slots     26.066k (± 7.8%) i/s   (38.36 μs/i) -    131.511k in   5.087467s
+
+Comparison:
+            baseline:   118333.8 i/s
+               slots:    26066.0 i/s - 4.54x  slower
+
+
 🏁🏁 NICE_PARTIALS 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            baseline    11.951k i/100ms
+            baseline    12.072k i/100ms
 Calculating -------------------------------------
-            baseline    119.604k (± 4.0%) i/s    (8.36 μs/i) -    597.550k in   5.005305s
+            baseline    114.740k (± 4.4%) i/s    (8.72 μs/i) -    579.456k in   5.060487s
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-               slots     3.745k i/100ms
+               slots     3.626k i/100ms
 Calculating -------------------------------------
-               slots     38.156k (± 3.3%) i/s   (26.21 μs/i) -    194.740k in   5.110455s
+               slots     35.971k (± 6.1%) i/s   (27.80 μs/i) -    181.300k in   5.061126s
 
 Comparison:
-            baseline:   119603.6 i/s
-               slots:    38156.2 i/s - 3.13x  slower
+            baseline:   114740.4 i/s
+               slots:    35971.0 i/s - 3.19x  slower
 
 
 🏁🏁 VIEW_COMPONENT 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            baseline    12.155k i/100ms
+            baseline    11.991k i/100ms
 Calculating -------------------------------------
-            baseline    120.458k (± 1.9%) i/s    (8.30 μs/i) -    607.750k in   5.047144s
+            baseline    118.532k (± 2.3%) i/s    (8.44 μs/i) -    599.550k in   5.060901s
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-               slots     7.636k i/100ms
+               slots     7.493k i/100ms
 Calculating -------------------------------------
-               slots     76.412k (± 3.2%) i/s   (13.09 μs/i) -    381.800k in   5.002530s
+               slots     72.281k (± 6.3%) i/s   (13.83 μs/i) -    359.664k in   5.002508s
 
 Comparison:
-            baseline:   120458.2 i/s
-               slots:    76412.0 i/s - 1.58x  slower
+            baseline:   118532.2 i/s
+               slots:    72281.3 i/s - 1.64x  slower
+```
 
+#### Without slots:
+
+```
+➜ bin/benchmark --no-slots
 
 🏁🏁 SLOTIFY 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            baseline    11.988k i/100ms
+            baseline    13.071k i/100ms
 Calculating -------------------------------------
-            baseline    119.934k (± 3.0%) i/s    (8.34 μs/i) -    599.400k in   5.002971s
+            baseline    127.673k (± 3.6%) i/s    (7.83 μs/i) -    640.479k in   5.023506s
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-               slots     2.656k i/100ms
+            no slots    11.029k i/100ms
 Calculating -------------------------------------
-               slots     26.854k (± 1.2%) i/s   (37.24 μs/i) -    135.456k in   5.044894s
+            no slots    110.253k (± 2.0%) i/s    (9.07 μs/i) -    551.450k in   5.003625s
 
 Comparison:
-            baseline:   119933.6 i/s
-               slots:    26853.9 i/s - 4.47x  slower
-```
+            baseline:   127673.0 i/s
+            no slots:   110252.6 i/s - 1.16x  slower
 
-#### No slots benchmark
 
-```
 🏁🏁 NICE_PARTIALS 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            baseline    13.033k i/100ms
+            baseline    13.016k i/100ms
 Calculating -------------------------------------
-            baseline    131.323k (± 1.0%) i/s    (7.61 μs/i) -    664.683k in   5.061999s
-
-Pausing here -- run Ruby again to measure the next benchmark...
+            baseline    131.103k (± 1.8%) i/s    (7.63 μs/i) -    663.816k in   5.065054s
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots     4.659k i/100ms
+            no slots     4.556k i/100ms
 Calculating -------------------------------------
-            no slots     46.284k (± 2.8%) i/s   (21.61 μs/i) -    232.950k in   5.037627s
+            no slots     44.888k (± 3.7%) i/s   (22.28 μs/i) -    227.800k in   5.082635s
 
 Comparison:
-            baseline:   131322.8 i/s
-            no slots:    46283.7 i/s - 2.84x  slower
+            baseline:   131103.4 i/s
+            no slots:    44888.2 i/s - 2.92x  slower
 
 
 🏁🏁 VIEW_COMPONENT 🏁🏁
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            baseline    12.845k i/100ms
+            baseline    13.454k i/100ms
 Calculating -------------------------------------
-            baseline    134.644k (± 1.6%) i/s    (7.43 μs/i) -    680.785k in   5.057489s
-
-Pausing here -- run Ruby again to measure the next benchmark...
+            baseline    128.817k (± 5.7%) i/s    (7.76 μs/i) -    645.792k in   5.038036s
 
 ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
 Warming up --------------------------------------
-            no slots    20.785k i/100ms
+            no slots    17.335k i/100ms
 Calculating -------------------------------------
-            no slots    206.431k (± 3.7%) i/s    (4.84 μs/i) -      1.039M in   5.042744s
+            no slots    203.191k (± 2.2%) i/s    (4.92 μs/i) -      1.023M in   5.036040s
 
 Comparison:
-            no slots:   206431.4 i/s
-            baseline:   134643.7 i/s - 1.53x  slower
-
-
-🏁🏁 SLOTIFY 🏁🏁
-
-ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
-Warming up --------------------------------------
-            baseline    13.247k i/100ms
-Calculating -------------------------------------
-            baseline    132.155k (± 2.9%) i/s    (7.57 μs/i) -    662.350k in   5.016827s
-
-Pausing here -- run Ruby again to measure the next benchmark...
-
-ruby 3.3.1 (2024-04-23 revision c56cd86388) [arm64-darwin23]
-Warming up --------------------------------------
-            no slots    11.537k i/100ms
-Calculating -------------------------------------
-            no slots    115.974k (± 1.8%) i/s    (8.62 μs/i) -    588.387k in   5.075197s
-
-Comparison:
-            baseline:   132154.8 i/s
-            no slots:   115974.0 i/s - 1.14x  slower
+            no slots:   203190.7 i/s
+            baseline:   128817.3 i/s - 1.58x  slower
 ```
 
 </details>
@@ -755,3 +763,7 @@ Comparison:
 Slotify was inspired by the excellent [nice_partials gem](https://github.com/bullet-train-co/nice_partials) as well as ViewComponent's [slots implementation](https://viewcomponent.org/guide/slots.html).
 
 `nice_partials` provides very similar functionality to Slotify but takes a slightly different approach/style. So if you are not convinced by Slotify then definitely [check it out](https://github.com/bullet-train-co/nice_partials)!
+
+## License
+
+The `slotify` gem is available as open source under the terms of the MIT License.

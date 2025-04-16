@@ -10,7 +10,7 @@ OptionParser.new do |opt|
 end.parse!
 
 command = "bundle exec ruby performance/benchmark.rb"
-subjects = %i[nice_partials view_component slotify]
+subjects = %i[slotify nice_partials view_component]
 subject = ARGV.first
 slots = options[:slots]
 
