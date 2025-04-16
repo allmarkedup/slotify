@@ -178,9 +178,9 @@ the default value will be used instead.
 <%# slots: (title: "Default title", author: nil) -%>
 ```
 
-### Setting slot values
+### Passing content to slots
 
-Content is passed into slots using dynamically generated `partial#with_<slot_name>` writer methods.
+Content is passed to slots by calling the appropriate `.with_<slot_name>` writer method on the argument yielded to the block when rendering the partial.
 
 Content can be provided as either the **first argument** or **as a block** when calling these methods at render time.
 The following two examples are equivalent:
