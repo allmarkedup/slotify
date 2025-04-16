@@ -37,8 +37,8 @@ class StrictLocalsTest < Slotify::TestCase
       _ do
         render(partial_path, title: "Title from locals", foo: "bar") do |partial|
           partial.with_description "This is the description"
-        end.assert_raise ::ActionView::Template::Error
-      end
+        end
+      end.must_raise ::ActionView::Template::Error
     end
   end
 

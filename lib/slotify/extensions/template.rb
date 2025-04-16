@@ -44,7 +44,7 @@ module Slotify
         return super unless strict_slots?
 
         strict_slots_keys.each_with_object(+super) do |key, code|
-          code << "partial.set_slot_default(:#{key}, binding.local_variable_get(:#{key})); #{key} = partial.content_for(:#{key});"
+          code << "slotify.set_slot_default(:#{key}, binding.local_variable_get(:#{key})); #{key} = slotify.content_for(:#{key});"
         end
       end
     end

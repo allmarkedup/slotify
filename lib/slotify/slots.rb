@@ -1,5 +1,5 @@
 module Slotify
-  class Partial
+  class Slots
     include SymbolInflectionHelper
 
     RESERVED_SLOT_NAMES = [
@@ -7,11 +7,11 @@ module Slotify
       :capture, :yield, :partial
     ]
 
-    attr_reader :outer_partial
+    attr_reader :outer_slotify
 
     def initialize(view_context, slots = [])
       @view_context = view_context
-      @outer_partial = view_context.partial
+      @outer_slotify = view_context.slotify
       @values = ValueStore.new(@view_context)
       @defined_slots = nil
 
