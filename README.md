@@ -361,7 +361,7 @@ Slotify patches a number of the most commonly used view helpers (such as `conten
 ➡️ <a href="https://example.com" data-controller="clicker">Example website</a>
 ```
 
-Any options provided to the helper are 'smart-merged' with slot value options using the [Phlex `mix` helper](https://www.phlex.fun/sgml/helpers#mix) which allows for class names and data attribute options to be combined as token lists rather than overwritten when merged.
+Any options provided to the helper are 'smart-merged' with slot value options using the [Phlex `mix` helper](https://www.phlex.fun/sgml/helpers#mix) to ensure token list options (such as class names) are properly combined instead of being overwritten.
 
 ```erb
 <%= content_tag :h1, title, class: "text-xl", id: "headline" %> <!-- options here are merged with slot value options -->
@@ -534,7 +534,9 @@ Slot arguments can also be accessed using hash access notation.
 
 **`.with_default_options(default_options)`**
 
-Merges the options set when calling the slot value writer method with the `default_options` hash provided and returns a new `Slotity::Value` instance with the merged options set.
+Merges slot options with the `default_options` hash provided. Returns a new `Slotity::Value` instance with the merged options set.
+
+Options are 'smart-merged' using the [Phlex `mix` helper](https://www.phlex.fun/sgml/helpers#mix) to ensure token list options (such as class names) are properly combined instead of being overwritten.
 
 ```erb
 <% title_with_defaults = title.with_default_options(class: "size-lg", aria: {level: 1}) %> 
