@@ -107,6 +107,7 @@ GEM
     date (3.4.1)
     drb (2.2.1)
     erubi (1.13.1)
+    gem-release (2.2.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
     i18n (1.14.7)
@@ -299,6 +300,7 @@ DEPENDENCIES
   appraisal
   benchmark-ips
   capybara
+  gem-release
   minitest
   minitest-reporters
   nice_partials

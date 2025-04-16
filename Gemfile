@@ -12,4 +12,5 @@ group :development, :test do
   gem "standard", ">= 1.35.1"
   gem "standard-rails"
   gem "view_component", "3.21.0"
+  gem "gem-release"
 end
