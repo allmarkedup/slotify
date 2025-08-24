@@ -2,6 +2,7 @@ module Slotify
   module Extensions
     module Base
       include SlotCompatability
+      require "action_view/template/error"
 
       attr_accessor :slotify
 
