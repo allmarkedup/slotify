@@ -34,7 +34,7 @@ module Slotify
       end
 
       def missing_strict_locals_error?(error)
-        error.template && defined?(ActionView::StrictLocalsError) && error.cause.is_a?(ActionView::StrictLocalsError) ||
+        error.template && Object.const_defined?("ActionView::StrictLocalsError") && error.cause.is_a?(ActionView::StrictLocalsError) ||
           (error.cause.is_a?(ArgumentError) && error.cause.message.match(/missing local/))
       end
     end
