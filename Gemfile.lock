@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    slotify (0.2.1)
+    slotify (0.2.2)
       actionview
       zeitwerk
 
